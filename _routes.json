@@ -1,0 +1,7 @@
+@"
+{
+  "version": 1,
+  "include": ["/*"],
+  "exclude": []
+}
+"@ | Out-File -FilePath _routes.json -Encoding utf8
