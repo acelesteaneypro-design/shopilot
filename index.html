@@ -318,6 +318,7 @@ footer{background:var(--text);color:rgba(255,255,255,.5);padding:40px 5%;text-al
 <script type="module">
   import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-app.js";
   import { getDatabase, ref, push, set } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-database.js";
+
   const firebaseConfig = {
     apiKey: "AIzaSyDBjIwGVJOWVldt_2xGmzRYob8usvqYPlQ",
     authDomain: "shopilot-admin.firebaseapp.com",
@@ -329,84 +330,81 @@ footer{background:var(--text);color:rgba(255,255,255,.5);padding:40px 5%;text-al
   };
   const app = initializeApp(firebaseConfig);
   const db = getDatabase(app);
-  window.db = db; window.ref = ref; window.push = push; window.set = set;
-</script>
 
-<script>
-window.addEventListener('scroll',()=>document.getElementById('nav').classList.toggle('scrolled',scrollY>20));
-const obs=new IntersectionObserver(e=>e.forEach(x=>{if(x.isIntersecting)x.target.classList.add('visible')}),{threshold:.08});
-document.querySelectorAll('.reveal').forEach(el=>obs.observe(el));
-function scrollToRegister(){document.getElementById('register').scrollIntoView({behavior:'smooth'})}
+  // ── UI générale ──────────────────────────────────────
+  window.addEventListener('scroll',()=>document.getElementById('nav').classList.toggle('scrolled',scrollY>20));
+  const obs=new IntersectionObserver(e=>e.forEach(x=>{if(x.isIntersecting)x.target.classList.add('visible')}),{threshold:.08});
+  document.querySelectorAll('.reveal').forEach(el=>obs.observe(el));
 
-function toggleDark(){document.body.classList.toggle('dark');localStorage.setItem('shopilot_dark',document.body.classList.contains('dark')?'1':'0')}
-if(localStorage.getItem('shopilot_dark')==='1')document.body.classList.add('dark');
+  window.scrollToRegister=function(){document.getElementById('register').scrollIntoView({behavior:'smooth'})};
 
-function toggleAutreCommerce(){document.getElementById('autre-commerce-group').style.display=document.getElementById('r-type').value==='Autre'?'block':'none'}
+  window.toggleDark=function(){document.body.classList.toggle('dark');localStorage.setItem('shopilot_dark',document.body.classList.contains('dark')?'1':'0')};
+  if(localStorage.getItem('shopilot_dark')==='1')document.body.classList.add('dark');
 
-let selectedPaiement = 'orange';
-function selectPaiement(el,type){document.querySelectorAll('.paiement-option').forEach(o=>o.classList.remove('selected'));el.classList.add('selected');selectedPaiement=type}
+  window.toggleAutreCommerce=function(){document.getElementById('autre-commerce-group').style.display=document.getElementById('r-type').value==='Autre'?'block':'none'};
 
-function goToPaiement(){
-  const nom=document.getElementById('r-nom').value.trim();
-  const typeSelect=document.getElementById('r-type').value;
-  const typeAutre=document.getElementById('r-type-autre').value.trim();
-  const type=typeSelect==='Autre'?typeAutre:typeSelect;
-  const prenom=document.getElementById('r-prenom').value.trim();
-  const nomP=document.getElementById('r-nom-p').value.trim();
-  const email=document.getElementById('r-email').value.trim();
-  const phone=document.getElementById('r-phone').value.trim();
-  if(!nom||!typeSelect||!prenom||!nomP||!email||!phone){showErr('r-err','⚠️ Veuillez remplir tous les champs obligatoires.');return}
-  if(typeSelect==='Autre'&&!typeAutre){showErr('r-err','⚠️ Veuillez préciser votre type de commerce.');return}
-  if(!email.includes('@')||!email.includes('.')){showErr('r-err','⚠️ Adresse email invalide.');return}
-  if(phone.replace(/\D/g,'').length<8){showErr('r-err','⚠️ Numéro WhatsApp invalide.');return}
-  hideErr('r-err');
-  document.getElementById('reg-step1').classList.remove('active');
-  document.getElementById('reg-step2').classList.add('active');
-  document.getElementById('r-momo').value = phone;
-}
+  let selectedPaiement='orange';
+  window.selectPaiement=function(el,type){document.querySelectorAll('.paiement-option').forEach(o=>o.classList.remove('selected'));el.classList.add('selected');selectedPaiement=type};
 
-function goToStep1(){
-  document.getElementById('reg-step2').classList.remove('active');
-  document.getElementById('reg-step1').classList.add('active');
-}
+  window.goToPaiement=function(){
+    const nom=document.getElementById('r-nom').value.trim();
+    const typeSelect=document.getElementById('r-type').value;
+    const typeAutre=document.getElementById('r-type-autre').value.trim();
+    const prenom=document.getElementById('r-prenom').value.trim();
+    const nomP=document.getElementById('r-nom-p').value.trim();
+    const email=document.getElementById('r-email').value.trim();
+    const phone=document.getElementById('r-phone').value.trim();
+    if(!nom||!typeSelect||!prenom||!nomP||!email||!phone){showErr('r-err','⚠️ Veuillez remplir tous les champs obligatoires.');return}
+    if(typeSelect==='Autre'&&!typeAutre){showErr('r-err','⚠️ Veuillez préciser votre type de commerce.');return}
+    if(!email.includes('@')||!email.includes('.')){showErr('r-err','⚠️ Adresse email invalide.');return}
+    if(phone.replace(/\D/g,'').length<8){showErr('r-err','⚠️ Numéro WhatsApp invalide.');return}
+    hideErr('r-err');
+    document.getElementById('reg-step1').classList.remove('active');
+    document.getElementById('reg-step2').classList.add('active');
+    document.getElementById('r-momo').value=phone;
+  };
 
-async function soumettre(){
-  const nom=document.getElementById('r-nom').value.trim();
-  const typeSelect=document.getElementById('r-type').value;
-  const typeAutre=document.getElementById('r-type-autre').value.trim();
-  const type=typeSelect==='Autre'?typeAutre:typeSelect;
-  const prenom=document.getElementById('r-prenom').value.trim();
-  const nomP=document.getElementById('r-nom-p').value.trim();
-  const email=document.getElementById('r-email').value.trim();
-  const phone=document.getElementById('r-phone').value.trim();
-  const plan=document.getElementById('r-plan').value;
-  const employes=document.getElementById('r-employes').value;
-  const momo=document.getElementById('r-momo').value.trim();
-  if(!momo || momo.replace(/\D/g,'').length<8){showErr('r-err2','⚠️ Numéro mobile money invalide.');return}
-  hideErr('r-err2');
-  const btn=document.getElementById('btn-sub');
-  btn.textContent='⏳ Envoi en cours...';btn.disabled=true;
-  try{
-    const demandesRef=ref(db,'demandes');
-    const nouvelleRef=push(demandesRef);
-    await set(nouvelleRef,{
-      nom,type,prenom,nomFamille:nomP,email,phone,plan,employes,
-      paiement:selectedPaiement,numeroMobileMoney:momo,
-      statut:'en_attente',
-      date:new Date().toISOString().slice(0,10),ts:Date.now()
-    });
-    const msg=`🔔 *Nouvelle inscription Shopilot !*%0A%0A🏪 Commerce : ${nom}%0A📂 Type : ${type}%0A👤 Contact : ${prenom} ${nomP}%0A📧 Email : ${email}%0A📱 WhatsApp : ${phone}%0A💼 Plan : ${plan}%0A💳 Paiement : ${selectedPaiement}%0A👥 Employés : ${employes}%0A📅 Date : ${new Date().toLocaleDateString('fr-FR')}`;
-    window.open(`https://wa.me/2250712962296?text=${msg}`,'_blank');
-    document.getElementById('reg-step2').style.display='none';
-    document.getElementById('reg-success').style.display='block';
-  }catch(e){
-    showErr('r-err2','❌ Erreur lors de l\'envoi. Vérifiez votre connexion.');
-    btn.textContent='Démarrer mon essai gratuit 🚀';btn.disabled=false;
-  }
-}
+  window.goToStep1=function(){
+    document.getElementById('reg-step2').classList.remove('active');
+    document.getElementById('reg-step1').classList.add('active');
+  };
 
-function showErr(id,m){const e=document.getElementById(id);e.textContent=m;e.style.display='block'}
-function hideErr(id){document.getElementById(id).style.display='none'}
+  window.soumettre=async function(){
+    const nom=document.getElementById('r-nom').value.trim();
+    const typeSelect=document.getElementById('r-type').value;
+    const typeAutre=document.getElementById('r-type-autre').value.trim();
+    const type=typeSelect==='Autre'?typeAutre:typeSelect;
+    const prenom=document.getElementById('r-prenom').value.trim();
+    const nomP=document.getElementById('r-nom-p').value.trim();
+    const email=document.getElementById('r-email').value.trim();
+    const phone=document.getElementById('r-phone').value.trim();
+    const plan=document.getElementById('r-plan').value;
+    const employes=document.getElementById('r-employes').value;
+    const momo=document.getElementById('r-momo').value.trim();
+    if(!momo||momo.replace(/\D/g,'').length<8){showErr('r-err2','⚠️ Numéro mobile money invalide.');return}
+    hideErr('r-err2');
+    const btn=document.getElementById('btn-sub');
+    btn.textContent='⏳ Envoi en cours...';btn.disabled=true;
+    try{
+      const nouvelleRef=push(ref(db,'demandes'));
+      await set(nouvelleRef,{
+        nom,type,prenom,nomFamille:nomP,email,phone,plan,employes,
+        paiement:selectedPaiement,numeroMobileMoney:momo,
+        statut:'en_attente',
+        date:new Date().toISOString().slice(0,10),ts:Date.now()
+      });
+      const msg=`🔔 *Nouvelle inscription Shopilot !*%0A%0A🏪 Commerce : ${nom}%0A📂 Type : ${type}%0A👤 Contact : ${prenom} ${nomP}%0A📧 Email : ${email}%0A📱 WhatsApp : ${phone}%0A💼 Plan : ${plan}%0A💳 Paiement : ${selectedPaiement}%0A👥 Employés : ${employes}%0A📅 Date : ${new Date().toLocaleDateString('fr-FR')}`;
+      window.open(`https://wa.me/2250712962296?text=${msg}`,'_blank');
+      document.getElementById('reg-step2').style.display='none';
+      document.getElementById('reg-success').style.display='block';
+    }catch(e){
+      showErr('r-err2','❌ Erreur lors de l\'envoi. Vérifiez votre connexion.');
+      btn.textContent='Démarrer mon essai gratuit 🚀';btn.disabled=false;
+    }
+  };
+
+  function showErr(id,m){const e=document.getElementById(id);e.textContent=m;e.style.display='block'}
+  function hideErr(id){document.getElementById(id).style.display='none'}
 </script>
 </body>
 </html>

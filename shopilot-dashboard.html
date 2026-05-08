@@ -25,7 +25,7 @@
 body{font-family:'DM Sans',sans-serif;background:var(--off);color:var(--text);min-height:100vh;transition:background .3s,color .3s}
 
 .login-overlay{position:fixed;inset:0;background:linear-gradient(135deg,var(--blue-dark),var(--blue));display:flex;align-items:center;justify-content:center;z-index:999;padding:24px}
-.login-box{background:white;border-radius:24px;padding:40px;width:100%;max-width:380px;text-align:center}
+.login-box{background:var(--white);border-radius:24px;padding:40px;width:100%;max-width:380px;text-align:center}
 .login-logo{font-family:'Syne',sans-serif;font-size:28px;font-weight:800;color:var(--blue);margin-bottom:4px}
 .login-sub{font-size:13px;color:var(--text2);margin-bottom:32px}
 .login-label{display:block;font-size:13px;font-weight:600;text-align:left;margin-bottom:6px;color:var(--text)}
@@ -95,7 +95,8 @@ body{font-family:'DM Sans',sans-serif;background:var(--off);color:var(--text);mi
 .form-input{width:100%;padding:11px 14px;border:1.5px solid var(--border);border-radius:10px;font-size:14px;font-family:inherit;color:var(--text);transition:border-color .2s;background:var(--white)}
 .form-input:focus{outline:none;border-color:var(--blue)}
 .form-row{display:grid;grid-template-columns:1fr 1fr;gap:12px}
-.btn-confirm{flex:1;padding:12px;border:none;border-radius:30px;background:var(--blue);color:white;font-size:14px;font-weight:700;cursor:pointer;font-family:inherit}
+.btn-confirm{flex:1;padding:12px;border:none;border-radius:30px;background:var(--blue);color:white;font-size:14px;font-weight:700;cursor:pointer;font-family:inherit;min-width:0}
+.btn-confirm:disabled{opacity:.6;cursor:not-allowed}
 .empty-state{text-align:center;padding:48px 24px;color:var(--text2)}
 .empty-icon{font-size:40px;margin-bottom:12px}
 #autre-type-group{display:none}
@@ -201,7 +202,7 @@ body{font-family:'DM Sans',sans-serif;background:var(--off);color:var(--text);mi
             <div class="form-group"><label class="form-label">Email secondaire</label><input class="form-input" id="n-email2" placeholder="email2@email.com (optionnel)" type="email"></div>
           </div>
           <div id="nouveau-err" style="color:var(--red);font-size:13px;margin-bottom:10px;display:none"></div>
-          <button class="btn-confirm" onclick="creerClient()" style="width:100%;margin-top:8px">Créer le client 🚀</button>
+          <button class="btn-confirm" id="btn-creer" onclick="creerClient()" style="width:100%;margin-top:8px">Créer le client 🚀</button>
         </div>
         <div id="nouveau-success" style="display:none;padding:32px;text-align:center">
           <div style="font-size:48px;margin-bottom:12px">✅</div>
@@ -581,10 +582,12 @@ window.creerClient = async function() {
   const pwdS = document.getElementById('n-pwd-s').value.trim() || genPwd(nom);
   const pwdG = document.getElementById('n-pwd-g').value.trim() || 'Gerant'+genPwd(nom).slice(-4);
   const err = document.getElementById('nouveau-err');
+  const btn = document.getElementById('btn-creer');
   if (!nom || !email || !phone) { err.textContent='⚠️ Remplissez tous les champs obligatoires'; err.style.display='block'; return; }
   if (typeSelect === 'Autre' && !typeAutre) { err.textContent='⚠️ Veuillez préciser le type de commerce'; err.style.display='block'; return; }
   if (!email.includes('@')) { err.textContent='⚠️ Email invalide'; err.style.display='block'; return; }
   err.style.display='none';
+  btn.textContent='⏳ Création en cours...'; btn.disabled=true;
   const id = nom.toLowerCase().replace(/\s+/g,'-').replace(/[^a-z0-9-]/g,'').substring(0,20)+'-'+Date.now().toString().slice(-4);
   const statut = plan === 'Fondateur' ? 'active' : 'trial';
   const dateFin = plan === 'Fondateur' ? '2099-12-31' : new Date(Date.now()+14*24*60*60*1000).toISOString().slice(0,10);
@@ -593,8 +596,11 @@ window.creerClient = async function() {
     document.getElementById('nouveau-form').style.display='none';
     document.getElementById('success-info').innerHTML = `<strong>Commerce :</strong> ${nom}<br><strong>Plan :</strong> ${plan}<br><br>🔗 <strong>Lien serveur :</strong> shopilot.pages.dev/app/${id}/<br>🔐 <strong>MDP serveur :</strong> ${pwdS}<br>👑 <strong>MDP gérant :</strong> ${pwdG}<br><br><em style="font-size:12px">Envoyez ces informations au client via WhatsApp</em>`;
     document.getElementById('nouveau-success').style.display='block';
-    showPage('dashboard');
-  } catch(e) { err.textContent='❌ Erreur Firebase.'; err.style.display='block'; }
+  } catch(e) {
+    err.textContent='❌ Erreur Firebase : ' + (e.message || 'Vérifiez votre connexion.');
+    err.style.display='block';
+    btn.textContent='Créer le client 🚀'; btn.disabled=false;
+  }
 };
 
 window.resetForm = function() {
@@ -604,6 +610,7 @@ window.resetForm = function() {
   document.getElementById('nouveau-form').style.display='block';
   document.getElementById('nouveau-success').style.display='none';
   document.getElementById('nouveau-err').style.display='none';
+  const btn=document.getElementById('btn-creer'); if(btn){btn.textContent='Créer le client 🚀';btn.disabled=false;}
 };
 
 window.toggleAutreType = function() { document.getElementById('autre-type-group').style.display = document.getElementById('n-type').value === 'Autre' ? 'block' : 'none'; };
