@@ -12,6 +12,7 @@
   --blue-glow:rgba(27,79,216,0.1);--off:#F5F7FF;--white:#fff;
   --text:#0D1B40;--text2:#5A6A8A;--border:#E0E7FF;
   --green:#00A651;--orange:#F77F00;--red:#E74C3C;
+  --gold:#D4AF37;
   --sidebar:240px;
 }
 *{box-sizing:border-box;margin:0;padding:0}
@@ -65,7 +66,9 @@ body{font-family:'DM Sans',sans-serif;background:var(--off);color:var(--text);mi
 .badge-active{background:#e8f5e9;color:var(--green)}
 .badge-trial{background:#fff3e0;color:var(--orange)}
 .badge-inactive{background:#fde8e8;color:var(--red)}
+.badge-fondateur{background:linear-gradient(135deg,#FFD700,#FFA500);color:#5C3D00;font-weight:800}
 .plan-badge{padding:3px 10px;border-radius:10px;font-size:11px;font-weight:600;background:var(--blue-glow);color:var(--blue)}
+.plan-badge-fondateur{background:linear-gradient(135deg,#FFF8E1,#FFE082);color:#5C3D00;font-weight:700}
 .action-btn{background:none;border:1px solid var(--border);padding:6px 12px;border-radius:8px;font-size:12px;cursor:pointer;font-family:inherit;color:var(--text2);transition:all .2s;margin-right:4px}
 .action-btn:hover{border-color:var(--blue);color:var(--blue)}
 .action-btn.danger:hover{border-color:var(--red);color:var(--red)}
@@ -143,7 +146,10 @@ body{font-family:'DM Sans',sans-serif;background:var(--off);color:var(--text);mi
             <div class="form-group"><label class="form-label">MDP serveur</label><input class="form-input" id="n-pwd-s" placeholder="Généré automatiquement"></div>
             <div class="form-group"><label class="form-label">MDP gérant</label><input class="form-input" id="n-pwd-g" placeholder="Généré automatiquement"></div>
           </div>
-          <div class="form-group"><label class="form-label">Plan</label><select class="form-input" id="n-plan"><option>Starter</option><option selected>Pro</option><option>Business</option></select></div>
+          <div class="form-row">
+            <div class="form-group"><label class="form-label">Plan</label><select class="form-input" id="n-plan"><option>Starter</option><option selected>Pro</option><option>Business</option><option>Fondateur</option></select></div>
+            <div class="form-group"><label class="form-label">Email secondaire</label><input class="form-input" id="n-email2" placeholder="email2@email.com (optionnel)" type="email"></div>
+          </div>
           <div id="nouveau-err" style="color:var(--red);font-size:13px;margin-bottom:10px;display:none"></div>
           <button class="btn-confirm" onclick="creerClient()" style="width:100%;margin-top:8px">Créer le client 🚀</button>
         </div>
@@ -191,6 +197,24 @@ function today() { return new Date().toISOString().slice(0,10); }
 function genPwd(nom) {
   const base = nom.replace(/[^a-zA-Z]/g,'').substring(0,4);
   return base.charAt(0).toUpperCase() + base.slice(1).toLowerCase() + Math.floor(1000+Math.random()*9000);
+}
+
+function getBadgeClass(c) {
+  if (c.plan === 'Fondateur') return 'badge-fondateur';
+  if (c.statut === 'active') return 'badge-active';
+  if (c.statut === 'trial') return 'badge-trial';
+  return 'badge-inactive';
+}
+
+function getBadgeText(c) {
+  if (c.plan === 'Fondateur') return '🥇 Fondateur';
+  if (c.statut === 'active') return 'Actif';
+  if (c.statut === 'trial') return 'Essai';
+  return 'Inactif';
+}
+
+function getPlanBadgeClass(c) {
+  return c.plan === 'Fondateur' ? 'plan-badge-fondateur' : 'plan-badge';
 }
 
 window.loginAdmin = function() {
@@ -249,9 +273,9 @@ function updateBadge() {
 }
 
 function renderDashboard() {
-  const actifs = clientsData.filter(c=>c.statut==='active').length;
-  const essai = clientsData.filter(c=>c.statut==='trial').length;
-  const rev = clientsData.filter(c=>c.statut!=='inactive').reduce((s,c)=>s+(c.plan==='Starter'?5000:c.plan==='Pro'?10000:20000),0);
+  const actifs = clientsData.filter(c=>c.statut==='active' || c.plan==='Fondateur').length;
+  const essai = clientsData.filter(c=>c.statut==='trial' && c.plan!=='Fondateur').length;
+  const rev = clientsData.filter(c=>c.statut!=='inactive' && c.plan!=='Fondateur').reduce((s,c)=>s+(c.plan==='Starter'?5000:c.plan==='Pro'?10000:20000),0);
   document.getElementById('stats-row').innerHTML = `
     <div class="stat-box"><div class="stat-box-icon">🏪</div><div class="stat-box-val">${clientsData.length}</div><div class="stat-box-label">Total clients</div></div>
     <div class="stat-box"><div class="stat-box-icon">✅</div><div class="stat-box-val">${actifs}</div><div class="stat-box-label">Clients actifs</div></div>
@@ -264,8 +288,8 @@ function renderDashboard() {
     <thead><tr><th>Commerce</th><th>Plan</th><th>Statut</th><th>Créé le</th></tr></thead>
     <tbody>${recent.map(c=>`<tr>
       <td><div class="client-name">${c.nom}</div><div class="client-type">${c.type}</div></td>
-      <td><span class="plan-badge">${c.plan}</span></td>
-      <td><span class="badge badge-${c.statut==='active'?'active':c.statut==='trial'?'trial':'inactive'}">${c.statut==='active'?'Actif':c.statut==='trial'?'Essai':'Inactif'}</span></td>
+      <td><span class="${getPlanBadgeClass(c)}">${c.plan}</span></td>
+      <td><span class="badge ${getBadgeClass(c)}">${getBadgeText(c)}</span></td>
       <td>${fmt(c.dateCreation)}</td>
     </tr>`).join('')}</tbody>` : '<tr><td colspan="4" style="text-align:center;padding:40px;color:var(--text2)">Aucun client</td></tr>';
 }
@@ -279,8 +303,8 @@ function renderClients() {
     <thead><tr><th>Commerce</th><th>Plan</th><th>Statut</th><th>Accès</th><th>Actions</th></tr></thead>
     <tbody>${clientsData.map(c=>`<tr>
       <td><div class="client-name">${c.nom}</div><div class="client-type">${c.type} • ${c.phone || ''}</div></td>
-      <td><span class="plan-badge">${c.plan}</span></td>
-      <td><span class="badge badge-${c.statut==='active'?'active':c.statut==='trial'?'trial':'inactive'}">${c.statut==='active'?'Actif':c.statut==='trial'?'Essai':'Inactif'}</span></td>
+      <td><span class="${getPlanBadgeClass(c)}">${c.plan}</span></td>
+      <td><span class="badge ${getBadgeClass(c)}">${getBadgeText(c)}</span></td>
       <td style="font-size:12px;color:var(--text2)">🔐 <code>${c.acces?.mdpServeur || ''}</code><br>👑 <code>${c.acces?.mdpGerant || ''}</code></td>
       <td>
         <button class="action-btn" onclick="copierAcces('${c.id}')">📋 Copier</button>
@@ -319,6 +343,7 @@ window.creerClient = async function() {
   const typeAutre = document.getElementById('n-type-autre').value.trim();
   const type = typeSelect === 'Autre' ? typeAutre : typeSelect;
   const email = document.getElementById('n-email').value.trim();
+  const email2 = document.getElementById('n-email2').value.trim();
   const phone = document.getElementById('n-phone').value.trim();
   const plan = document.getElementById('n-plan').value;
   const pwdS = document.getElementById('n-pwd-s').value.trim() || genPwd(nom);
@@ -331,11 +356,13 @@ window.creerClient = async function() {
   err.style.display='none';
 
   const id = nom.toLowerCase().replace(/\s+/g,'-').replace(/[^a-z0-9-]/g,'').substring(0,20)+'-'+Date.now().toString().slice(-4);
+  const statut = plan === 'Fondateur' ? 'active' : 'trial';
+  const dateFin = plan === 'Fondateur' ? '2099-12-31' : new Date(Date.now()+30*24*60*60*1000).toISOString().slice(0,10);
 
   try {
     await set(ref(db, `clients/${id}`), {
-      nom, type, email, phone, plan,
-      statut: 'trial',
+      nom, type, email, email2, phone, plan,
+      statut,
       dateCreation: today(),
       tsCreation: Date.now(),
       acces: {
@@ -346,7 +373,7 @@ window.creerClient = async function() {
       },
       abonnement: {
         dateDebut: today(),
-        dateFin: new Date(Date.now()+30*24*60*60*1000).toISOString().slice(0,10)
+        dateFin
       }
     });
 
@@ -367,8 +394,9 @@ window.creerClient = async function() {
 };
 
 window.resetForm = function() {
-  ['n-nom','n-email','n-phone','n-pwd-s','n-pwd-g','n-type-autre'].forEach(id=>document.getElementById(id).value='');
+  ['n-nom','n-email','n-email2','n-phone','n-pwd-s','n-pwd-g','n-type-autre'].forEach(id=>document.getElementById(id).value='');
   document.getElementById('n-type').value='Restaurant';
+  document.getElementById('n-plan').value='Pro';
   document.getElementById('autre-type-group').style.display='none';
   document.getElementById('nouveau-form').style.display='block';
   document.getElementById('nouveau-success').style.display='none';
@@ -381,11 +409,14 @@ window.approuver = async function(id) {
   const pwdS = genPwd(dem.nom);
   const pwdG = 'Gerant'+genPwd(dem.nom).slice(-4);
   const clientId = dem.nom.toLowerCase().replace(/\s+/g,'-').replace(/[^a-z0-9-]/g,'').substring(0,20)+'-'+Date.now().toString().slice(-4);
+  const plan = dem.plan || 'Pro';
+  const statut = plan === 'Fondateur' ? 'active' : 'trial';
+  const dateFin = plan === 'Fondateur' ? '2099-12-31' : new Date(Date.now()+30*24*60*60*1000).toISOString().slice(0,10);
 
   try {
     await set(ref(db, `clients/${clientId}`), {
-      nom: dem.nom, type: dem.type, email: dem.email, phone: dem.phone, plan: dem.plan,
-      statut: 'trial',
+      nom: dem.nom, type: dem.type, email: dem.email, phone: dem.phone, plan,
+      statut,
       dateCreation: today(),
       tsCreation: Date.now(),
       acces: {
@@ -394,7 +425,7 @@ window.approuver = async function(id) {
         mdpServeur: pwdS,
         mdpGerant: pwdG
       },
-      abonnement: { dateDebut: today(), dateFin: new Date(Date.now()+30*24*60*60*1000).toISOString().slice(0,10) }
+      abonnement: { dateDebut: today(), dateFin }
     });
     await remove(ref(db, `demandes/${id}`));
     alert(`✅ ${dem.nom} approuvé !\n\nMDP Serveur : ${pwdS}\nMDP Gérant : ${pwdG}`);
@@ -411,11 +442,15 @@ window.rejeter = async function(id) {
 window.toggleStatut = async function(id) {
   const c = clientsData.find(x=>x.id===id);
   if (!c) return;
+  if (c.plan === 'Fondateur') { alert('Le client Fondateur ne peut pas être suspendu.'); return; }
   try { await update(ref(db, `clients/${id}`), { statut: c.statut==='active'?'inactive':'active' }); }
   catch(e) { console.error(e); }
 };
 
 window.supprimerClient = async function(id) {
+  const c = clientsData.find(x=>x.id===id);
+  if (!c) return;
+  if (c.plan === 'Fondateur') { alert('Le client Fondateur ne peut pas être supprimé.'); return; }
   if (!confirm('Supprimer ce client définitivement ?')) return;
   try { await remove(ref(db, `clients/${id}`)); }
   catch(e) { console.error(e); }
