@@ -1,0 +1,6 @@
+User-agent: *
+Disallow: /shopilot-dashboard.html
+Disallow: /admin.html
+Allow: /
+
+Sitemap: https://shopilot-35p.pages.dev/sitemap.xml
