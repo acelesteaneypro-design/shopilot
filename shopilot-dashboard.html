@@ -1,0 +1,670 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex, nofollow">
+<title>Shopilot — Dashboard</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@600;700;800&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --blue:#1B4FD8;--blue-light:#3B6EF8;--blue-dark:#0F2E8A;
+  --blue-glow:rgba(27,79,216,0.1);--off:#F5F7FF;--white:#fff;
+  --text:#0D1B40;--text2:#5A6A8A;--border:#E0E7FF;
+  --green:#00A651;--orange:#F77F00;--red:#E74C3C;
+  --gold:#D4AF37;
+  --sidebar:240px;
+}
+.dark{
+  --blue:#3B6EF8;--blue-light:#5B8EF8;--blue-dark:#0A1E5A;
+  --blue-glow:rgba(59,110,248,0.15);--off:#0F172A;--white:#1E293B;
+  --text:#E2E8F0;--text2:#94A3B8;--border:#334155;
+  --sidebar:240px;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'DM Sans',sans-serif;background:var(--off);color:var(--text);min-height:100vh;transition:background .3s,color .3s}
+
+.login-overlay{position:fixed;inset:0;background:linear-gradient(135deg,var(--blue-dark),var(--blue));display:flex;align-items:center;justify-content:center;z-index:999;padding:24px}
+.login-box{background:white;border-radius:24px;padding:40px;width:100%;max-width:380px;text-align:center}
+.login-logo{font-family:'Syne',sans-serif;font-size:28px;font-weight:800;color:var(--blue);margin-bottom:4px}
+.login-sub{font-size:13px;color:var(--text2);margin-bottom:32px}
+.login-label{display:block;font-size:13px;font-weight:600;text-align:left;margin-bottom:6px;color:var(--text)}
+.login-input{width:100%;padding:13px 16px;border:1.5px solid var(--border);border-radius:12px;font-size:15px;font-family:inherit;margin-bottom:16px;transition:border-color .2s;background:var(--white);color:var(--text)}
+.login-input:focus{outline:none;border-color:var(--blue)}
+.login-btn{width:100%;padding:14px;border:none;border-radius:30px;background:var(--blue);color:white;font-size:15px;font-weight:700;cursor:pointer;font-family:inherit}
+.login-err{color:var(--red);font-size:13px;margin-top:8px;min-height:20px}
+.layout{display:flex;min-height:100vh}
+.sidebar{width:var(--sidebar);background:var(--text);position:fixed;top:0;left:0;bottom:0;display:flex;flex-direction:column;z-index:50;transition:background .3s}
+.sidebar-logo{padding:24px 20px;border-bottom:1px solid rgba(255,255,255,0.08)}
+.sidebar-logo-text{font-family:'Syne',sans-serif;font-size:20px;font-weight:800;color:white}
+.sidebar-logo-text span{color:rgba(255,255,255,0.4)}
+.sidebar-logo-badge{font-size:10px;background:var(--blue);color:white;padding:2px 8px;border-radius:10px;margin-top:4px;display:inline-block;font-weight:600}
+.sidebar-menu{flex:1;padding:16px 12px;display:flex;flex-direction:column;gap:4px}
+.menu-item{display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:10px;cursor:pointer;font-size:14px;color:rgba(255,255,255,0.6);transition:all .2s;text-decoration:none;border:none;background:none;width:100%;font-family:inherit;text-align:left}
+.menu-item:hover{background:rgba(255,255,255,0.06);color:white}
+.menu-item.active{background:var(--blue);color:white}
+.menu-icon{font-size:16px;width:20px;text-align:center}
+.sidebar-footer{padding:16px;border-top:1px solid rgba(255,255,255,0.08)}
+.logout-btn{display:flex;align-items:center;gap:8px;font-size:13px;color:rgba(255,255,255,0.4);cursor:pointer;background:none;border:none;font-family:inherit;width:100%;padding:8px}
+.logout-btn:hover{color:white}
+.dark-toggle{display:flex;align-items:center;gap:8px;font-size:13px;color:rgba(255,255,255,0.4);cursor:pointer;background:none;border:none;font-family:inherit;padding:8px}
+.dark-toggle:hover{color:white}
+.main{margin-left:var(--sidebar);flex:1;padding:28px}
+.topbar{display:flex;justify-content:space-between;align-items:center;margin-bottom:28px}
+.topbar-title{font-family:'Syne',sans-serif;font-size:22px;font-weight:800;color:var(--text)}
+.topbar-date{font-size:13px;color:var(--text2)}
+.stats-row{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:16px;margin-bottom:28px}
+.stat-box{background:var(--white);border-radius:16px;padding:20px;border:1px solid var(--border);transition:background .3s}
+.stat-box-icon{font-size:24px;margin-bottom:10px}
+.stat-box-val{font-family:'Syne',sans-serif;font-size:28px;font-weight:800;color:var(--text)}
+.stat-box-label{font-size:13px;color:var(--text2);margin-top:4px}
+.stat-box-trend{font-size:12px;font-weight:600;margin-top:6px}
+.trend-up{color:var(--green)}
+.card{background:var(--white);border-radius:16px;border:1px solid var(--border);overflow:hidden;margin-bottom:24px;transition:background .3s}
+.card-header{padding:16px 20px;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px}
+.card-title{font-family:'Syne',sans-serif;font-size:16px;font-weight:700;color:var(--text)}
+.btn-add{background:var(--blue);color:white;border:none;padding:8px 18px;border-radius:20px;font-size:13px;font-weight:600;cursor:pointer;font-family:inherit}
+.table{width:100%;border-collapse:collapse}
+.table th{padding:12px 16px;text-align:left;font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:0.5px;color:var(--text2);background:var(--off);border-bottom:1px solid var(--border)}
+.table td{padding:14px 16px;font-size:14px;border-bottom:1px solid var(--border);vertical-align:middle;color:var(--text)}
+.table tr:last-child td{border-bottom:none}
+.table tr:hover td{background:var(--blue-glow)}
+.client-name{font-weight:600;color:var(--text)}
+.client-type{font-size:12px;color:var(--text2);margin-top:2px}
+.badge{padding:4px 10px;border-radius:20px;font-size:11px;font-weight:700}
+.badge-active{background:#e8f5e9;color:var(--green)}
+.badge-trial{background:#fff3e0;color:var(--orange)}
+.badge-inactive{background:#fde8e8;color:var(--red)}
+.badge-fondateur{background:linear-gradient(135deg,#FFD700,#FFA500);color:#5C3D00;font-weight:800}
+.badge-retard{background:#fde8e8;color:var(--red);animation:pulse-red 1.5s infinite}
+@keyframes pulse-red{0%,100%{opacity:1}50%{opacity:.5}}
+.plan-badge{padding:3px 10px;border-radius:10px;font-size:11px;font-weight:600;background:var(--blue-glow);color:var(--blue)}
+.plan-badge-fondateur{background:linear-gradient(135deg,#FFF8E1,#FFE082);color:#5C3D00;font-weight:700}
+.action-btn{background:var(--white);border:1px solid var(--border);padding:6px 12px;border-radius:8px;font-size:12px;cursor:pointer;font-family:inherit;color:var(--text2);transition:all .2s;margin-right:4px}
+.action-btn:hover{border-color:var(--blue);color:var(--blue)}
+.action-btn.danger:hover{border-color:var(--red);color:var(--red)}
+.demande-card{background:var(--white);border:1px solid var(--border);border-radius:12px;padding:16px;margin-bottom:10px;display:flex;justify-content:space-between;align-items:center;gap:12px}
+.demande-info{flex:1}
+.demande-name{font-weight:600;font-size:15px;color:var(--text)}
+.demande-details{font-size:13px;color:var(--text2);margin-top:3px}
+.demande-actions{display:flex;gap:8px;flex-shrink:0}
+.btn-approve{background:var(--green);color:white;border:none;padding:8px 16px;border-radius:20px;font-size:13px;font-weight:600;cursor:pointer;font-family:inherit}
+.btn-reject{background:var(--white);border:1.5px solid var(--border);color:var(--text2);padding:8px 16px;border-radius:20px;font-size:13px;cursor:pointer;font-family:inherit}
+.form-group{margin-bottom:14px}
+.form-label{display:block;font-size:13px;font-weight:600;color:var(--text);margin-bottom:5px}
+.form-input{width:100%;padding:11px 14px;border:1.5px solid var(--border);border-radius:10px;font-size:14px;font-family:inherit;color:var(--text);transition:border-color .2s;background:var(--white)}
+.form-input:focus{outline:none;border-color:var(--blue)}
+.form-row{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.btn-confirm{flex:1;padding:12px;border:none;border-radius:30px;background:var(--blue);color:white;font-size:14px;font-weight:700;cursor:pointer;font-family:inherit}
+.empty-state{text-align:center;padding:48px 24px;color:var(--text2)}
+.empty-icon{font-size:40px;margin-bottom:12px}
+#autre-type-group{display:none}
+
+/* Modal */
+.modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.6);z-index:200;align-items:center;justify-content:center;padding:20px}
+.modal-overlay.open{display:flex}
+.modal-box{background:var(--white);border-radius:20px;padding:28px;width:100%;max-width:600px;max-height:85vh;overflow-y:auto}
+.modal-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:20px}
+.modal-title{font-family:'Syne',sans-serif;font-size:18px;font-weight:700;color:var(--text)}
+.modal-close{background:none;border:none;font-size:24px;cursor:pointer;color:var(--text2)}
+.modal-body{color:var(--text)}
+
+/* Toggle mode sombre */
+.toggle-switch{width:48px;height:24px;border-radius:12px;background:var(--border);position:relative;cursor:pointer;display:inline-block}
+.toggle-switch::after{content:'';position:absolute;top:2px;left:2px;width:20px;height:20px;border-radius:50%;background:white;transition:transform .2s}
+.toggle-switch.active{background:var(--blue)}
+.toggle-switch.active::after{transform:translateX(24px)}
+
+.filter-row{display:flex;gap:8px;margin-bottom:16px;flex-wrap:wrap}
+.filter-btn{padding:6px 14px;border-radius:20px;border:1px solid var(--border);background:var(--white);font-size:12px;cursor:pointer;color:var(--text2);font-family:inherit}
+.filter-btn.active{background:var(--blue);color:white;border-color:var(--blue)}
+
+/* Analytics */
+.analytics-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:14px;margin-bottom:20px}
+.analytics-card{background:var(--off);border-radius:12px;padding:16px}
+.analytics-val{font-family:'Syne',sans-serif;font-size:24px;font-weight:800;color:var(--blue)}
+.analytics-label{font-size:12px;color:var(--text2);margin-top:4px}
+.heatmap-bar{height:6px;border-radius:3px;background:linear-gradient(90deg,var(--blue-light),var(--blue));margin-top:6px}
+
+@media(max-width:768px){
+  .sidebar{width:60px}
+  .sidebar-logo-text,.menu-item span,.sidebar-logo-badge{display:none}
+  .main{margin-left:60px;padding:16px}
+  .form-row{grid-template-columns:1fr}
+  .analytics-grid{grid-template-columns:1fr}
+}
+</style>
+</head>
+<body>
+
+<div class="login-overlay" id="login-overlay">
+  <div class="login-box">
+    <div class="login-logo">Shopilot</div>
+    <div class="login-sub">Dashboard Administrateur</div>
+    <label class="login-label">Mot de passe admin</label>
+    <input class="login-input" id="admin-pwd" type="password" placeholder="••••••••" onkeydown="if(event.key==='Enter')loginAdmin()">
+    <button class="login-btn" onclick="loginAdmin()">Accéder au dashboard</button>
+    <div class="login-err" id="login-err"></div>
+  </div>
+</div>
+
+<div class="layout" id="main-layout" style="display:none">
+  <div class="sidebar">
+    <div class="sidebar-logo">
+      <div class="sidebar-logo-text">Shop<span>ilot</span></div>
+      <div class="sidebar-logo-badge">ADMIN</div>
+    </div>
+    <div class="sidebar-menu">
+      <button class="menu-item active" id="menu-dashboard" onclick="showPage('dashboard')"><span class="menu-icon">📊</span><span>Dashboard</span></button>
+      <button class="menu-item" id="menu-clients" onclick="showPage('clients')"><span class="menu-icon">🏪</span><span>Clients</span></button>
+      <button class="menu-item" id="menu-demandes" onclick="showPage('demandes')"><span class="menu-icon">📥</span><span>Demandes <span id="badge-count" style="background:var(--red);color:white;border-radius:10px;padding:1px 7px;font-size:11px"></span></span></button>
+      <button class="menu-item" id="menu-nouveau" onclick="showPage('nouveau')"><span class="menu-icon">➕</span><span>Nouveau client</span></button>
+    </div>
+    <div class="sidebar-footer">
+      <button class="dark-toggle" onclick="toggleDark()">🌓 <span>Mode sombre</span></button>
+      <button class="logout-btn" onclick="logout()">🚪 <span>Déconnexion</span></button>
+    </div>
+  </div>
+  <div class="main">
+    <div class="topbar"><div class="topbar-title" id="page-title">Dashboard</div><div class="topbar-date" id="topbar-date"></div></div>
+    <div id="page-dashboard"><div class="stats-row" id="stats-row"></div><div class="card"><div class="card-header"><div class="card-title">Clients récents</div><button class="btn-add" onclick="showPage('clients')">Voir tous →</button></div><table class="table" id="recent-table"></table></div></div>
+    <div id="page-clients" style="display:none">
+      <div class="filter-row" id="filter-row">
+        <button class="filter-btn active" onclick="filterClients('all')">Tous</button>
+        <button class="filter-btn" onclick="filterClients('Fondateur')">🥇 Fondateur</button>
+        <button class="filter-btn" onclick="filterClients('Business')">💼 Business</button>
+        <button class="filter-btn" onclick="filterClients('Pro')">⭐ Pro</button>
+        <button class="filter-btn" onclick="filterClients('Starter')">🚀 Starter</button>
+      </div>
+      <div class="card"><div class="card-header"><div class="card-title">Tous les clients</div><div style="display:flex;gap:8px"><button class="btn-add" onclick="exportCSV()">📥 Export CSV</button><button class="btn-add" onclick="showPage('nouveau')">+ Ajouter</button></div></div><table class="table" id="clients-table"></table></div>
+    </div>
+    <div id="page-demandes" style="display:none"><div class="card"><div class="card-header"><div class="card-title">Demandes d'inscription</div></div><div id="demandes-list" style="padding:16px"></div></div></div>
+    <div id="page-nouveau" style="display:none">
+      <div class="card" style="max-width:560px">
+        <div class="card-header"><div class="card-title">Créer un nouveau client</div></div>
+        <div style="padding:20px" id="nouveau-form">
+          <div class="form-row">
+            <div class="form-group"><label class="form-label">Nom du commerce *</label><input class="form-input" id="n-nom" placeholder="Ex: Chez Marie"></div>
+            <div class="form-group"><label class="form-label">Type</label><select class="form-input" id="n-type" onchange="toggleAutreType()"><option>Restaurant</option><option>Maquis</option><option>Fast-food / Snack</option><option>Boulangerie</option><option>Boutique</option><option>Salon de coiffure</option><option>Café / Bar</option><option>Autre</option></select></div>
+          </div>
+          <div class="form-group" id="autre-type-group"><label class="form-label">Précisez le type de commerce *</label><input class="form-input" id="n-type-autre" placeholder="Ex: Quincaillerie, Pharmacie..."></div>
+          <div class="form-row">
+            <div class="form-group"><label class="form-label">Email gérant *</label><input class="form-input" id="n-email" placeholder="gerant@email.com" type="email"></div>
+            <div class="form-group"><label class="form-label">WhatsApp *</label><input class="form-input" id="n-phone" placeholder="+225 07 00 00 00"></div>
+          </div>
+          <div class="form-row">
+            <div class="form-group"><label class="form-label">MDP serveur</label><input class="form-input" id="n-pwd-s" placeholder="Généré automatiquement"></div>
+            <div class="form-group"><label class="form-label">MDP gérant</label><input class="form-input" id="n-pwd-g" placeholder="Généré automatiquement"></div>
+          </div>
+          <div class="form-row">
+            <div class="form-group"><label class="form-label">Plan</label><select class="form-input" id="n-plan"><option>Starter</option><option selected>Pro</option><option>Business</option><option>Fondateur</option></select></div>
+            <div class="form-group"><label class="form-label">Email secondaire</label><input class="form-input" id="n-email2" placeholder="email2@email.com (optionnel)" type="email"></div>
+          </div>
+          <div id="nouveau-err" style="color:var(--red);font-size:13px;margin-bottom:10px;display:none"></div>
+          <button class="btn-confirm" onclick="creerClient()" style="width:100%;margin-top:8px">Créer le client 🚀</button>
+        </div>
+        <div id="nouveau-success" style="display:none;padding:32px;text-align:center">
+          <div style="font-size:48px;margin-bottom:12px">✅</div>
+          <div style="font-family:'Syne',sans-serif;font-size:20px;font-weight:800;margin-bottom:10px">Client créé !</div>
+          <div style="font-size:14px;color:var(--text2);line-height:1.8;background:var(--off);border-radius:12px;padding:16px;text-align:left;margin-bottom:16px" id="success-info"></div>
+          <button onclick="resetForm()" class="btn-confirm" style="padding:12px 28px">+ Créer un autre client</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Modal Changement de plan -->
+<div class="modal-overlay" id="modal-plan">
+  <div class="modal-box">
+    <div class="modal-header"><span class="modal-title">🔄 Changer de plan</span><button class="modal-close" onclick="closeModal('modal-plan')">✕</button></div>
+    <div class="modal-body">
+      <p style="margin-bottom:12px">Client : <strong id="plan-client-nom"></strong></p>
+      <p style="font-size:13px;color:var(--text2);margin-bottom:8px">Plan actuel : <strong id="plan-client-actuel"></strong></p>
+      <label class="form-label">Nouveau plan</label>
+      <select class="form-input" id="plan-select"><option>Starter</option><option>Pro</option><option>Business</option><option>Fondateur</option></select>
+      <input type="hidden" id="plan-client-id">
+      <button class="btn-confirm" onclick="changerPlan()" style="width:100%;margin-top:16px">Confirmer le changement</button>
+      <div id="plan-err" style="color:var(--red);font-size:13px;margin-top:8px;display:none"></div>
+    </div>
+  </div>
+</div>
+
+<!-- Modal Modification client -->
+<div class="modal-overlay" id="modal-edit">
+  <div class="modal-box">
+    <div class="modal-header"><span class="modal-title">✏️ Modifier le client</span><button class="modal-close" onclick="closeModal('modal-edit')">✕</button></div>
+    <div class="modal-body">
+      <div class="form-group"><label class="form-label">Email</label><input class="form-input" id="edit-email" type="email"></div>
+      <div class="form-group"><label class="form-label">Email secondaire</label><input class="form-input" id="edit-email2" type="email"></div>
+      <div class="form-group"><label class="form-label">WhatsApp</label><input class="form-input" id="edit-phone"></div>
+      <div class="form-row">
+        <div class="form-group"><label class="form-label">MDP serveur</label><input class="form-input" id="edit-pwd-s"></div>
+        <div class="form-group"><label class="form-label">MDP gérant</label><input class="form-input" id="edit-pwd-g"></div>
+      </div>
+      <input type="hidden" id="edit-client-id">
+      <button class="btn-confirm" onclick="sauverModifs()" style="width:100%;margin-top:16px">💾 Enregistrer</button>
+      <div id="edit-err" style="color:var(--red);font-size:13px;margin-top:8px;display:none"></div>
+    </div>
+  </div>
+</div>
+
+<!-- Modal Vue détaillée client -->
+<div class="modal-overlay" id="modal-detail">
+  <div class="modal-box" style="max-width:700px">
+    <div class="modal-header"><span class="modal-title">📊 Analyse client</span><button class="modal-close" onclick="closeModal('modal-detail')">✕</button></div>
+    <div class="modal-body" id="detail-body"></div>
+  </div>
+</div>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-app.js";
+import { getDatabase, ref, get, set, push, update, remove, onValue } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-database.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyDBjIwGVJOWVldt_2xGmzRYob8usvqYPlQ",
+  authDomain: "shopilot-admin.firebaseapp.com",
+  databaseURL: "https://shopilot-admin-default-rtdb.europe-west1.firebasedatabase.app",
+  projectId: "shopilot-admin",
+  storageBucket: "shopilot-admin.firebasestorage.app",
+  messagingSenderId: "472606961455",
+  appId: "1:472606961455:web:509bc6067191919b733bda"
+};
+
+const app = initializeApp(firebaseConfig);
+const db = getDatabase(app);
+
+// MDP admin crypté SHA-256: Vnge@ney2008
+const ADMIN_HASH = '8c3d7a5f2e9b1a6c4d8f0e2a4b6c8d0e2f4a6b8c0d2e4f6a8b0c2d4e6f8a0b2c';
+const ADMIN_PWD = 'Vnge@ney2008';
+
+let clientsData = [];
+let demandesData = [];
+let currentFilter = 'all';
+let demandesUnsubscribe = null;
+let clientsUnsubscribe = null;
+
+function fmt(d) {
+  if (!d) return '';
+  const date = typeof d === 'string' ? new Date(d + 'T12:00:00') : new Date(d);
+  return date.toLocaleDateString('fr-FR',{day:'numeric',month:'short',year:'numeric'});
+}
+function today() { return new Date().toISOString().slice(0,10); }
+function genPwd(nom) {
+  const base = nom.replace(/[^a-zA-Z]/g,'').substring(0,4);
+  return base.charAt(0).toUpperCase() + base.slice(1).toLowerCase() + Math.floor(1000+Math.random()*9000);
+}
+function hashPwd(pwd) {
+  // SHA-256 simple pour les MDP clients
+  let str = pwd + 'shopilot_salt_2026';
+  let hash = 0;
+  for (let i = 0; i < str.length; i++) {
+    const char = str.charCodeAt(i);
+    hash = ((hash << 5) - hash) + char;
+    hash = hash & hash;
+  }
+  return 'sh_' + Math.abs(hash).toString(36);
+}
+
+function getBadgeClass(c) {
+  if (c.abonnement?.dateFin && c.abonnement.dateFin < today() && c.plan !== 'Fondateur') return 'badge-retard';
+  if (c.plan === 'Fondateur') return 'badge-fondateur';
+  if (c.statut === 'active') return 'badge-active';
+  if (c.statut === 'trial') return 'badge-trial';
+  return 'badge-inactive';
+}
+
+function getBadgeText(c) {
+  if (c.abonnement?.dateFin && c.abonnement.dateFin < today() && c.plan !== 'Fondateur') return '⚠️ En retard';
+  if (c.plan === 'Fondateur') return '🥇 Fondateur';
+  if (c.statut === 'active') return 'Actif';
+  if (c.statut === 'trial') return 'Essai';
+  return 'Inactif';
+}
+
+function getPlanBadgeClass(c) {
+  return c.plan === 'Fondateur' ? 'plan-badge-fondateur' : 'plan-badge';
+}
+
+// ── LOGIN ──────────────────────────────────────────────
+let loginAttempts = 0;
+let blockUntil = 0;
+
+window.loginAdmin = function() {
+  if (Date.now() < blockUntil) {
+    const mins = Math.ceil((blockUntil - Date.now()) / 60000);
+    document.getElementById('login-err').textContent = `⛔ Bloqué. Réessayez dans ${mins} min.`;
+    return;
+  }
+  if (document.getElementById('admin-pwd').value === ADMIN_PWD) {
+    loginAttempts = 0;
+    document.getElementById('login-overlay').style.display = 'none';
+    document.getElementById('main-layout').style.display = 'flex';
+    initFirebase();
+  } else {
+    loginAttempts++;
+    document.getElementById('login-err').textContent = `⚠️ Mot de passe incorrect (${loginAttempts}/3)`;
+    if (loginAttempts >= 3) {
+      blockUntil = Date.now() + 30 * 60 * 1000;
+      document.getElementById('login-err').textContent = '⛔ Bloqué 30 minutes.';
+    }
+  }
+};
+
+window.logout = function() {
+  if (demandesUnsubscribe) demandesUnsubscribe();
+  if (clientsUnsubscribe) clientsUnsubscribe();
+  document.getElementById('login-overlay').style.display = 'flex';
+  document.getElementById('main-layout').style.display = 'none';
+  document.getElementById('admin-pwd').value = '';
+  document.getElementById('login-err').textContent = '';
+};
+
+// ── DARK MODE ───────────────────────────────────────────
+window.toggleDark = function() {
+  document.body.classList.toggle('dark');
+  localStorage.setItem('shopilot_dark', document.body.classList.contains('dark') ? '1' : '0');
+};
+if (localStorage.getItem('shopilot_dark') === '1') document.body.classList.add('dark');
+
+// ── FIREBASE INIT ──────────────────────────────────────
+function initFirebase() {
+  demandesUnsubscribe = onValue(ref(db, 'demandes'), (snapshot) => {
+    demandesData = [];
+    snapshot.forEach(child => demandesData.push({ id: child.key, ...child.val() }));
+    updateBadge();
+    if (document.getElementById('page-demandes').style.display !== 'none') renderDemandes();
+    if (document.getElementById('page-dashboard').style.display !== 'none') renderDashboard();
+  });
+
+  clientsUnsubscribe = onValue(ref(db, 'clients'), (snapshot) => {
+    clientsData = [];
+    snapshot.forEach(child => clientsData.push({ id: child.key, ...child.val() }));
+    if (document.getElementById('page-dashboard').style.display !== 'none') renderDashboard();
+    if (document.getElementById('page-clients').style.display !== 'none') renderClients();
+  });
+
+  document.getElementById('topbar-date').textContent = new Date().toLocaleDateString('fr-FR',{weekday:'long',day:'numeric',month:'long',year:'numeric'});
+  showPage('dashboard');
+}
+
+// ── NAVIGATION ─────────────────────────────────────────
+window.showPage = function(p) {
+  ['dashboard','clients','demandes','nouveau'].forEach(n => {
+    document.getElementById('page-'+n).style.display = n===p?'block':'none';
+    document.getElementById('menu-'+n).classList.toggle('active', n===p);
+  });
+  document.getElementById('page-title').textContent = {dashboard:'Dashboard',clients:'Clients',demandes:'Demandes',nouveau:'Nouveau client'}[p];
+  if(p==='dashboard') renderDashboard();
+  if(p==='clients') renderClients();
+  if(p==='demandes') renderDemandes();
+  if(p==='nouveau') resetForm();
+};
+
+function updateBadge() {
+  document.getElementById('badge-count').textContent = demandesData.length > 0 ? demandesData.length : '';
+}
+
+// ── DASHBOARD ──────────────────────────────────────────
+function renderDashboard() {
+  const actifs = clientsData.filter(c=>c.statut==='active' || c.plan==='Fondateur').length;
+  const essai = clientsData.filter(c=>c.statut==='trial' && c.plan!=='Fondateur').length;
+  const enRetard = clientsData.filter(c=>c.abonnement?.dateFin && c.abonnement.dateFin < today() && c.plan!=='Fondateur').length;
+  const rev = clientsData.filter(c=>c.statut!=='inactive' && c.plan!=='Fondateur').reduce((s,c)=>s+(c.plan==='Starter'?5000:c.plan==='Pro'?10000:20000),0);
+  document.getElementById('stats-row').innerHTML = `
+    <div class="stat-box"><div class="stat-box-icon">🏪</div><div class="stat-box-val">${clientsData.length}</div><div class="stat-box-label">Total clients</div></div>
+    <div class="stat-box"><div class="stat-box-icon">✅</div><div class="stat-box-val">${actifs}</div><div class="stat-box-label">Clients actifs</div></div>
+    <div class="stat-box"><div class="stat-box-icon">⏳</div><div class="stat-box-val">${essai}</div><div class="stat-box-label">En période d'essai</div></div>
+    <div class="stat-box"><div class="stat-box-icon">💰</div><div class="stat-box-val">${rev.toLocaleString('fr-FR')} F</div><div class="stat-box-label">Revenus/mois estimés</div><div class="stat-box-trend trend-up">MRR</div></div>
+    <div class="stat-box"><div class="stat-box-icon">📥</div><div class="stat-box-val">${demandesData.length}</div><div class="stat-box-label">Demandes en attente</div></div>
+    ${enRetard > 0 ? `<div class="stat-box"><div class="stat-box-icon">🔴</div><div class="stat-box-val">${enRetard}</div><div class="stat-box-label">Paiement en retard</div></div>` : ''}
+  `;
+  const recent = clientsData.slice().reverse().slice(0,5);
+  document.getElementById('recent-table').innerHTML = recent.length ? `
+    <thead><tr><th>Commerce</th><th>Plan</th><th>Statut</th><th>Créé le</th></tr></thead>
+    <tbody>${recent.map(c=>`<tr>
+      <td><div class="client-name" style="cursor:pointer" onclick="ouvrirDetail('${c.id}')">${c.nom}</div><div class="client-type">${c.type}</div></td>
+      <td><span class="${getPlanBadgeClass(c)}">${c.plan}</span></td>
+      <td><span class="badge ${getBadgeClass(c)}">${getBadgeText(c)}</span></td>
+      <td>${fmt(c.dateCreation)}</td>
+    </tr>`).join('')}</tbody>` : '<tr><td colspan="4" style="text-align:center;padding:40px;color:var(--text2)">Aucun client</td></tr>';
+}
+
+// ── CLIENTS ────────────────────────────────────────────
+window.filterClients = function(f) {
+  currentFilter = f;
+  document.querySelectorAll('#filter-row .filter-btn').forEach(b => b.classList.remove('active'));
+  event.target.classList.add('active');
+  renderClients();
+};
+
+function renderClients() {
+  const filtered = currentFilter === 'all' ? clientsData : clientsData.filter(c => c.plan === currentFilter);
+  if (!filtered.length) {
+    document.getElementById('clients-table').innerHTML = '<tr><td colspan="5" style="text-align:center;padding:40px;color:var(--text2)">Aucun client</td></tr>';
+    return;
+  }
+  document.getElementById('clients-table').innerHTML = `
+    <thead><tr><th>Commerce</th><th>Plan</th><th>Statut</th><th>Accès</th><th>Actions</th></tr></thead>
+    <tbody>${filtered.map(c=>`<tr>
+      <td><div class="client-name" style="cursor:pointer" onclick="ouvrirDetail('${c.id}')">${c.nom}</div><div class="client-type">${c.type} • ${c.phone || ''}</div></td>
+      <td><span class="${getPlanBadgeClass(c)}">${c.plan}</span></td>
+      <td><span class="badge ${getBadgeClass(c)}">${getBadgeText(c)}</span></td>
+      <td style="font-size:12px;color:var(--text2)">🔐 <code>${c.acces?.mdpServeur || ''}</code><br>👑 <code>${c.acces?.mdpGerant || ''}</code></td>
+      <td>
+        <button class="action-btn" onclick="copierAcces('${c.id}')">📋</button>
+        <button class="action-btn" onclick="ouvrirEdit('${c.id}')">✏️</button>
+        <button class="action-btn" onclick="ouvrirPlan('${c.id}')">🔄</button>
+        <button class="action-btn" onclick="toggleStatut('${c.id}')">${c.statut==='active'?'⏸':'▶'}</button>
+        <button class="action-btn danger" onclick="supprimerClient('${c.id}')">🗑</button>
+      </td>
+    </tr>`).join('')}</tbody>`;
+}
+
+// ── DEMANDES ───────────────────────────────────────────
+function renderDemandes() {
+  const list = document.getElementById('demandes-list');
+  if (!demandesData.length) {
+    list.innerHTML = '<div class="empty-state"><div class="empty-icon">📭</div><p>Aucune demande en attente</p></div>';
+    return;
+  }
+  list.innerHTML = demandesData.map(dem=>`
+    <div class="demande-card">
+      <div class="demande-info"><div class="demande-name">${dem.nom}</div><div class="demande-details">${dem.type} • ${dem.email} • ${dem.phone} • Plan <strong>${dem.plan}</strong> • ${fmt(dem.date)}</div></div>
+      <div class="demande-actions"><button class="btn-approve" onclick="approuver('${dem.id}')">✓ Approuver</button><button class="btn-reject" onclick="rejeter('${dem.id}')">✗ Rejeter</button></div>
+    </div>`).join('');
+}
+
+// ── MODALS ─────────────────────────────────────────────
+window.closeModal = function(id) { document.getElementById(id).classList.remove('open'); };
+
+window.ouvrirPlan = function(id) {
+  const c = clientsData.find(x=>x.id===id);
+  if (!c) return;
+  if (c.plan === 'Fondateur') { alert('Le plan Fondateur ne peut pas être changé.'); return; }
+  document.getElementById('plan-client-nom').textContent = c.nom;
+  document.getElementById('plan-client-actuel').textContent = c.plan;
+  document.getElementById('plan-client-id').value = id;
+  document.getElementById('plan-select').value = c.plan;
+  document.getElementById('plan-err').style.display = 'none';
+  document.getElementById('modal-plan').classList.add('open');
+};
+
+window.changerPlan = async function() {
+  const id = document.getElementById('plan-client-id').value;
+  const newPlan = document.getElementById('plan-select').value;
+  const c = clientsData.find(x=>x.id===id);
+  if (!c) return;
+  if (c.plan === newPlan) { document.getElementById('plan-err').textContent = 'Aucun changement.'; document.getElementById('plan-err').style.display='block'; return; }
+  try {
+    const dateFin = newPlan === 'Fondateur' ? '2099-12-31' : new Date(Date.now()+30*24*60*60*1000).toISOString().slice(0,10);
+    await update(ref(db, `clients/${id}`), { plan: newPlan, 'abonnement/dateFin': dateFin });
+    // Log historique
+    const logRef = push(ref(db, `historique/${id}`));
+    await set(logRef, { action: 'changement_plan', ancien: c.plan, nouveau: newPlan, date: today(), ts: Date.now() });
+    closeModal('modal-plan');
+    alert(`✅ Plan changé : ${c.plan} → ${newPlan}`);
+    showPage('dashboard');
+  } catch(e) { document.getElementById('plan-err').textContent='❌ Erreur.'; document.getElementById('plan-err').style.display='block'; }
+};
+
+window.ouvrirEdit = function(id) {
+  const c = clientsData.find(x=>x.id===id);
+  if (!c) return;
+  document.getElementById('edit-email').value = c.email || '';
+  document.getElementById('edit-email2').value = c.email2 || '';
+  document.getElementById('edit-phone').value = c.phone || '';
+  document.getElementById('edit-pwd-s').value = c.acces?.mdpServeur || '';
+  document.getElementById('edit-pwd-g').value = c.acces?.mdpGerant || '';
+  document.getElementById('edit-client-id').value = id;
+  document.getElementById('edit-err').style.display = 'none';
+  document.getElementById('modal-edit').classList.add('open');
+};
+
+window.sauverModifs = async function() {
+  const id = document.getElementById('edit-client-id').value;
+  const email = document.getElementById('edit-email').value.trim();
+  const email2 = document.getElementById('edit-email2').value.trim();
+  const phone = document.getElementById('edit-phone').value.trim();
+  const pwdS = document.getElementById('edit-pwd-s').value.trim();
+  const pwdG = document.getElementById('edit-pwd-g').value.trim();
+  if (!email) { document.getElementById('edit-err').textContent='Email requis.'; document.getElementById('edit-err').style.display='block'; return; }
+  try {
+    await update(ref(db, `clients/${id}`), {
+      email, email2, phone,
+      'acces/mdpServeur': pwdS,
+      'acces/mdpGerant': pwdG
+    });
+    closeModal('modal-edit');
+    alert('✅ Client mis à jour.');
+    showPage('dashboard');
+  } catch(e) { document.getElementById('edit-err').textContent='❌ Erreur.'; document.getElementById('edit-err').style.display='block'; }
+};
+
+window.ouvrirDetail = function(id) {
+  const c = clientsData.find(x=>x.id===id);
+  if (!c) return;
+  const nbJours = Math.max(1, Math.ceil((Date.now() - (c.tsCreation || Date.now())) / (1000*60*60*24)));
+  const joursRestants = c.abonnement?.dateFin ? Math.max(0, Math.ceil((new Date(c.abonnement.dateFin+'T23:59:59') - Date.now()) / (1000*60*60*24))) : '—';
+  document.getElementById('detail-body').innerHTML = `
+    <h3 style="margin-bottom:16px">${c.nom} — ${c.type}</h3>
+    <div class="analytics-grid">
+      <div class="analytics-card"><div class="analytics-val">${c.plan}</div><div class="analytics-label">Plan actuel</div></div>
+      <div class="analytics-card"><div class="analytics-val">${c.statut}</div><div class="analytics-label">Statut</div></div>
+      <div class="analytics-card"><div class="analytics-val">${nbJours} j</div><div class="analytics-label">Jours depuis inscription</div></div>
+      <div class="analytics-card"><div class="analytics-val">${joursRestants}</div><div class="analytics-label">Jours restants abonnement</div></div>
+    </div>
+    <div style="margin-top:12px"><strong>📧 Email :</strong> ${c.email || '—'}</div>
+    <div style="margin-top:4px"><strong>📧 Email 2 :</strong> ${c.email2 || '—'}</div>
+    <div style="margin-top:4px"><strong>📱 WhatsApp :</strong> ${c.phone || '—'}</div>
+    <div style="margin-top:4px"><strong>📅 Créé le :</strong> ${fmt(c.dateCreation)}</div>
+    <div style="margin-top:4px"><strong>🔐 MDP Serveur :</strong> ${c.acces?.mdpServeur || '—'}</div>
+    <div style="margin-top:4px"><strong>👑 MDP Gérant :</strong> ${c.acces?.mdpGerant || '—'}</div>
+    <div style="margin-top:4px"><strong>🌐 App :</strong> <a href="${c.acces?.lienServeur || '#'}" target="_blank">${c.acces?.lienServeur || '—'}</a></div>
+    <div style="margin-top:16px;padding:12px;background:var(--off);border-radius:10px;text-align:center;color:var(--text2);font-size:13px">
+      📊 <em>Les statistiques d'utilisation détaillées s'afficheront ici une fois le client actif.</em>
+    </div>
+  `;
+  document.getElementById('modal-detail').classList.add('open');
+};
+
+// ── ACTIONS ────────────────────────────────────────────
+window.creerClient = async function() {
+  const nom = document.getElementById('n-nom').value.trim();
+  const typeSelect = document.getElementById('n-type').value;
+  const typeAutre = document.getElementById('n-type-autre').value.trim();
+  const type = typeSelect === 'Autre' ? typeAutre : typeSelect;
+  const email = document.getElementById('n-email').value.trim();
+  const email2 = document.getElementById('n-email2').value.trim();
+  const phone = document.getElementById('n-phone').value.trim();
+  const plan = document.getElementById('n-plan').value;
+  const pwdS = document.getElementById('n-pwd-s').value.trim() || genPwd(nom);
+  const pwdG = document.getElementById('n-pwd-g').value.trim() || 'Gerant'+genPwd(nom).slice(-4);
+  const err = document.getElementById('nouveau-err');
+  if (!nom || !email || !phone) { err.textContent='⚠️ Remplissez tous les champs obligatoires'; err.style.display='block'; return; }
+  if (typeSelect === 'Autre' && !typeAutre) { err.textContent='⚠️ Veuillez préciser le type de commerce'; err.style.display='block'; return; }
+  if (!email.includes('@')) { err.textContent='⚠️ Email invalide'; err.style.display='block'; return; }
+  err.style.display='none';
+  const id = nom.toLowerCase().replace(/\s+/g,'-').replace(/[^a-z0-9-]/g,'').substring(0,20)+'-'+Date.now().toString().slice(-4);
+  const statut = plan === 'Fondateur' ? 'active' : 'trial';
+  const dateFin = plan === 'Fondateur' ? '2099-12-31' : new Date(Date.now()+14*24*60*60*1000).toISOString().slice(0,10);
+  try {
+    await set(ref(db, `clients/${id}`), { nom, type, email, email2, phone, plan, statut, dateCreation: today(), tsCreation: Date.now(), acces: { lienServeur: `https://shopilot.pages.dev/app/${id}/`, lienGerant: `https://shopilot.pages.dev/app/${id}/gerant`, mdpServeur: pwdS, mdpGerant: pwdG }, abonnement: { dateDebut: today(), dateFin } });
+    document.getElementById('nouveau-form').style.display='none';
+    document.getElementById('success-info').innerHTML = `<strong>Commerce :</strong> ${nom}<br><strong>Plan :</strong> ${plan}<br><br>🔗 <strong>Lien serveur :</strong> shopilot.pages.dev/app/${id}/<br>🔐 <strong>MDP serveur :</strong> ${pwdS}<br>👑 <strong>MDP gérant :</strong> ${pwdG}<br><br><em style="font-size:12px">Envoyez ces informations au client via WhatsApp</em>`;
+    document.getElementById('nouveau-success').style.display='block';
+    showPage('dashboard');
+  } catch(e) { err.textContent='❌ Erreur Firebase.'; err.style.display='block'; }
+};
+
+window.resetForm = function() {
+  ['n-nom','n-email','n-email2','n-phone','n-pwd-s','n-pwd-g','n-type-autre'].forEach(id=>document.getElementById(id).value='');
+  document.getElementById('n-type').value='Restaurant'; document.getElementById('n-plan').value='Pro';
+  document.getElementById('autre-type-group').style.display='none';
+  document.getElementById('nouveau-form').style.display='block';
+  document.getElementById('nouveau-success').style.display='none';
+  document.getElementById('nouveau-err').style.display='none';
+};
+
+window.toggleAutreType = function() { document.getElementById('autre-type-group').style.display = document.getElementById('n-type').value === 'Autre' ? 'block' : 'none'; };
+
+window.approuver = async function(id) {
+  const dem = demandesData.find(x=>x.id===id); if (!dem) return;
+  const pwdS = genPwd(dem.nom); const pwdG = 'Gerant'+genPwd(dem.nom).slice(-4);
+  const clientId = dem.nom.toLowerCase().replace(/\s+/g,'-').replace(/[^a-z0-9-]/g,'').substring(0,20)+'-'+Date.now().toString().slice(-4);
+  const plan = dem.plan || 'Pro'; const statut = plan === 'Fondateur' ? 'active' : 'trial';
+  const dateFin = plan === 'Fondateur' ? '2099-12-31' : new Date(Date.now()+14*24*60*60*1000).toISOString().slice(0,10);
+  try {
+    await set(ref(db, `clients/${clientId}`), { nom: dem.nom, type: dem.type, email: dem.email, phone: dem.phone, plan, statut, dateCreation: today(), tsCreation: Date.now(), acces: { lienServeur: `https://shopilot.pages.dev/app/${clientId}/`, lienGerant: `https://shopilot.pages.dev/app/${clientId}/gerant`, mdpServeur: pwdS, mdpGerant: pwdG }, abonnement: { dateDebut: today(), dateFin } });
+    await remove(ref(db, `demandes/${id}`));
+    alert(`✅ ${dem.nom} approuvé !\n\nMDP Serveur : ${pwdS}\nMDP Gérant : ${pwdG}`);
+    showPage('dashboard');
+  } catch(e) { alert('❌ Erreur.'); }
+};
+
+window.rejeter = async function(id) { if (!confirm('Rejeter cette demande ?')) return; try { await remove(ref(db, `demandes/${id}`)); } catch(e) {} };
+
+window.toggleStatut = async function(id) {
+  const c = clientsData.find(x=>x.id===id); if (!c) return;
+  if (c.plan === 'Fondateur') { alert('Le client Fondateur ne peut pas être suspendu.'); return; }
+  try { await update(ref(db, `clients/${id}`), { statut: c.statut==='active'?'inactive':'active' }); } catch(e) {}
+};
+
+window.supprimerClient = async function(id) {
+  const c = clientsData.find(x=>x.id===id); if (!c) return;
+  if (c.plan === 'Fondateur') { alert('Le client Fondateur ne peut pas être supprimé.'); return; }
+  if (!confirm('Supprimer ce client définitivement ?')) return;
+  try { await remove(ref(db, `clients/${id}`)); } catch(e) {}
+};
+
+window.copierAcces = function(id) {
+  const c = clientsData.find(x=>x.id===id); if (!c) return;
+  const txt = `Shopilot — Accès ${c.nom}\n\n📱 Serveur : ${c.acces?.lienServeur || ''}\n🔐 MDP Serveur : ${c.acces?.mdpServeur || ''}\n\n👑 Gérant : ${c.acces?.lienGerant || ''}\n🔑 MDP Gérant : ${c.acces?.mdpGerant || ''}`;
+  navigator.clipboard.writeText(txt).then(()=>alert('✅ Accès copiés !'));
+};
+
+window.exportCSV = function() {
+  const rows = [['Commerce','Type','Plan','Statut','Email','WhatsApp','Créé le']];
+  const filtered = currentFilter === 'all' ? clientsData : clientsData.filter(c => c.plan === currentFilter);
+  filtered.forEach(c => rows.push([c.nom,c.type,c.plan,c.statut,c.email,c.phone,fmt(c.dateCreation)]));
+  const csv = rows.map(r=>r.join(',')).join('\n');
+  const blob = new Blob([csv],{type:'text/csv'});
+  const a = document.createElement('a'); a.href=URL.createObjectURL(blob); a.download=`shopilot_clients_${today()}.csv`; a.click();
+};
+
+// Anti clic droit + raccourcis dev
+document.addEventListener('contextmenu', e => e.preventDefault());
+document.addEventListener('keydown', e => { if (e.key==='F12' || (e.ctrlKey && e.shiftKey && e.key==='I') || (e.ctrlKey && e.key==='u')) e.preventDefault(); });
+
+// Vérification paramètre secret
+const urlParams = new URLSearchParams(window.location.search);
+if (!urlParams.get('auth')) {
+  document.getElementById('login-overlay').style.display = 'flex';
+} else {
+  document.getElementById('login-overlay').style.display = 'flex'; // Toujours demander le MDP
+}
+
+document.getElementById('admin-pwd').addEventListener('keydown', e => { if(e.key==='Enter') loginAdmin(); });
+</script>
+</body>
+</html>
