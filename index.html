@@ -141,8 +141,6 @@ footer{background:var(--text);color:rgba(255,255,255,.5);padding:40px 5%;text-al
 .reveal{opacity:0;transform:translateY(28px);transition:opacity .65s ease,transform .65s ease}.reveal.visible{opacity:1;transform:translateY(0)}
 .d1{transition-delay:.1s}.d2{transition-delay:.2s}.d3{transition-delay:.3s}
 #autre-commerce-group{display:none}
-
-/* Paiement simulé */
 .paiement-step{display:none}
 .paiement-step.active{display:block}
 .paiement-options{display:flex;gap:12px;flex-wrap:wrap;margin-bottom:16px}
@@ -152,7 +150,6 @@ footer{background:var(--text);color:rgba(255,255,255,.5);padding:40px 5%;text-al
 .paiement-option-icon{font-size:28px;margin-bottom:6px}
 .paiement-option-name{font-size:12px;font-weight:600;color:var(--text)}
 .btn-back{background:none;border:none;color:var(--blue);font-size:14px;cursor:pointer;font-family:inherit;margin-bottom:12px}
-
 @media(max-width:900px){.nav-links{display:none}.feat-grid,.pricing-grid,.steps-grid{grid-template-columns:1fr 1fr}.targets-grid{grid-template-columns:repeat(2,1fr)}.step-line{display:none}.phone-side{display:none}}
 @media(max-width:600px){.feat-grid,.pricing-grid,.steps-grid,.targets-grid{grid-template-columns:1fr}.form-row{grid-template-columns:1fr}.hero-kpis .kpi-div{display:none}}
 </style>
@@ -243,25 +240,9 @@ footer{background:var(--text);color:rgba(255,255,255,.5);padding:40px 5%;text-al
   <div class="container">
     <div class="reveal" style="text-align:center"><div class="tag">Tarifs</div><div class="s-title">Simple, transparent,<br>sans surprise</div><p class="s-sub" style="margin:0 auto">Pas de frais cachés. Changez de plan à tout moment.</p></div>
     <div class="pricing-grid reveal">
-      <div class="p-card">
-        <div class="p-tier">Starter</div><div class="p-tagline">L'essentiel qui suffit</div><div class="p-amount"><span class="p-num">5 000</span><span class="p-cur">FCFA</span></div><div class="p-period">par mois · 14 jours gratuits</div><div class="p-div"></div>
-        <div class="p-demo"><strong>💡 Ce que voit la gérante :</strong>Commandes en temps réel, recettes totales, rapport email automatique chaque soir à 23h.</div>
-        <ul class="p-feats"><li class="p-feat"><span class="p-check">✓</span><span class="p-feat-txt"><strong>2 utilisateurs</strong>1 employé + 1 gérant</span></li><li class="p-feat"><span class="p-check">✓</span><span class="p-feat-txt"><strong>Menu illimité</strong>Catégories et articles sans limite</span></li><li class="p-feat"><span class="p-check">✓</span><span class="p-feat-txt"><strong>Récap journalier</strong>Historique du jour complet</span></li><li class="p-feat"><span class="p-check">✓</span><span class="p-feat-txt"><strong>Rapport email quotidien</strong>Chaque soir automatiquement</span></li><li class="p-feat"><span class="p-check">✓</span><span class="p-feat-txt"><strong>Temps réel</strong>Gérant voit les commandes en direct</span></li><li class="p-feat"><span class="p-check">✓</span><span class="p-feat-txt"><strong>Mode hors ligne</strong>Fonctionne sans internet</span></li><li class="p-feat"><span class="p-check">✓</span><span class="p-feat-txt"><strong>Support WhatsApp</strong>Réponse sous 24h</span></li></ul>
-        <button class="btn-plan btn-ps" onclick="scrollToRegister()">Commencer gratuitement</button>
-      </div>
-      <div class="p-card featured">
-        <div class="feat-badge-price">⭐ Le plus populaire</div>
-        <div class="p-tier">Pro</div><div class="p-tagline">Le cerveau de votre commerce</div><div class="p-amount"><span class="p-num">10 000</span><span class="p-cur">FCFA</span></div><div class="p-period">par mois · 14 jours gratuits</div><div class="p-div"></div>
-        <div class="p-demo"><strong>💡 Ce que voit la gérante :</strong>Tout du Starter + graphiques jour/semaine/mois, navigation par date, bilan hebdo, export Excel.</div>
-        <ul class="p-feats"><li class="p-feat"><span class="p-check">✓</span><span class="p-feat-txt"><strong>5 utilisateurs</strong>Plusieurs employés + gérant</span></li><li class="p-feat"><span class="p-check">✓</span><span class="p-feat-txt"><strong>Tout le plan Starter</strong>Inclus entièrement</span></li><li class="p-feat"><span class="p-check">✓</span><span class="p-feat-txt"><strong>Historique jour/semaine/mois</strong>Navigation par date</span></li><li class="p-feat"><span class="p-check">✓</span><span class="p-feat-txt"><strong>Bilan hebdo automatique</strong>Chaque lundi matin</span></li><li class="p-feat"><span class="p-check">✓</span><span class="p-feat-txt"><strong>Export Excel</strong>Téléchargez vos données</span></li><li class="p-feat"><span class="p-check">✓</span><span class="p-feat-txt"><strong>Graphiques analytiques</strong>Visualisez vos tendances</span></li><li class="p-feat"><span class="p-check">✓</span><span class="p-feat-txt"><strong>Traçabilité complète</strong>Justification d'annulation obligatoire</span></li><li class="p-feat"><span class="p-check">✓</span><span class="p-feat-txt"><strong>Support prioritaire</strong>Réponse sous 4h</span></li></ul>
-        <button class="btn-plan btn-pp" onclick="scrollToRegister()">Commencer gratuitement</button>
-      </div>
-      <div class="p-card">
-        <div class="p-tier">Business</div><div class="p-tagline">Votre empire, sous contrôle</div><div class="p-amount"><span class="p-num">20 000</span><span class="p-cur">FCFA</span></div><div class="p-period">par mois · 14 jours gratuits</div><div class="p-div"></div>
-        <div class="p-demo"><strong>💡 Ce que voit la gérante :</strong>Tout du Pro + multi-points de vente, vue consolidée, rapports PDF personnalisés.</div>
-        <ul class="p-feats"><li class="p-feat"><span class="p-check">✓</span><span class="p-feat-txt"><strong>Utilisateurs illimités</strong>Autant d'employés que vous voulez</span></li><li class="p-feat"><span class="p-check">✓</span><span class="p-feat-txt"><strong>Tout le plan Pro</strong>Inclus entièrement</span></li><li class="p-feat"><span class="p-check">✓</span><span class="p-feat-txt"><strong>Multi-points de vente</strong>Gérez plusieurs emplacements</span></li><li class="p-feat"><span class="p-check">✓</span><span class="p-feat-txt"><strong>Personnalisation complète</strong>Logo, couleurs, nom de domaine</span></li><li class="p-feat"><span class="p-check">✓</span><span class="p-feat-txt"><strong>Dashboard analytique avancé</strong>KPIs et insights poussés</span></li><li class="p-feat"><span class="p-check">✓</span><span class="p-feat-txt"><strong>Rapports PDF sur mesure</strong>Envoyés automatiquement</span></li><li class="p-feat"><span class="p-check">✓</span><span class="p-feat-txt"><strong>Support dédié 7j/7</strong>Réponse sous 1h</span></li></ul>
-        <button class="btn-plan btn-ps" onclick="scrollToRegister()">Commencer gratuitement</button>
-      </div>
+      <div class="p-card"><div class="p-tier">Starter</div><div class="p-tagline">L'essentiel qui suffit</div><div class="p-amount"><span class="p-num">5 000</span><span class="p-cur">FCFA</span></div><div class="p-period">par mois · 14 jours gratuits</div><div class="p-div"></div><div class="p-demo"><strong>💡 Ce que voit la gérante :</strong>Commandes en temps réel, recettes totales, rapport email automatique chaque soir à 23h.</div><ul class="p-feats"><li class="p-feat"><span class="p-check">✓</span><span class="p-feat-txt"><strong>2 utilisateurs</strong>1 employé + 1 gérant</span></li><li class="p-feat"><span class="p-check">✓</span><span class="p-feat-txt"><strong>Menu illimité</strong>Catégories et articles sans limite</span></li><li class="p-feat"><span class="p-check">✓</span><span class="p-feat-txt"><strong>Récap journalier</strong>Historique du jour complet</span></li><li class="p-feat"><span class="p-check">✓</span><span class="p-feat-txt"><strong>Rapport email quotidien</strong>Chaque soir automatiquement</span></li><li class="p-feat"><span class="p-check">✓</span><span class="p-feat-txt"><strong>Temps réel</strong>Gérant voit les commandes en direct</span></li><li class="p-feat"><span class="p-check">✓</span><span class="p-feat-txt"><strong>Mode hors ligne</strong>Fonctionne sans internet</span></li><li class="p-feat"><span class="p-check">✓</span><span class="p-feat-txt"><strong>Support WhatsApp</strong>Réponse sous 24h</span></li></ul><button class="btn-plan btn-ps" onclick="scrollToRegister()">Commencer gratuitement</button></div>
+      <div class="p-card featured"><div class="feat-badge-price">⭐ Le plus populaire</div><div class="p-tier">Pro</div><div class="p-tagline">Le cerveau de votre commerce</div><div class="p-amount"><span class="p-num">10 000</span><span class="p-cur">FCFA</span></div><div class="p-period">par mois · 14 jours gratuits</div><div class="p-div"></div><div class="p-demo"><strong>💡 Ce que voit la gérante :</strong>Tout du Starter + graphiques jour/semaine/mois, navigation par date, bilan hebdo, export Excel.</div><ul class="p-feats"><li class="p-feat"><span class="p-check">✓</span><span class="p-feat-txt"><strong>5 utilisateurs</strong>Plusieurs employés + gérant</span></li><li class="p-feat"><span class="p-check">✓</span><span class="p-feat-txt"><strong>Tout le plan Starter</strong>Inclus entièrement</span></li><li class="p-feat"><span class="p-check">✓</span><span class="p-feat-txt"><strong>Historique jour/semaine/mois</strong>Navigation par date</span></li><li class="p-feat"><span class="p-check">✓</span><span class="p-feat-txt"><strong>Bilan hebdo automatique</strong>Chaque lundi matin</span></li><li class="p-feat"><span class="p-check">✓</span><span class="p-feat-txt"><strong>Export Excel</strong>Téléchargez vos données</span></li><li class="p-feat"><span class="p-check">✓</span><span class="p-feat-txt"><strong>Graphiques analytiques</strong>Visualisez vos tendances</span></li><li class="p-feat"><span class="p-check">✓</span><span class="p-feat-txt"><strong>Traçabilité complète</strong>Justification d'annulation obligatoire</span></li><li class="p-feat"><span class="p-check">✓</span><span class="p-feat-txt"><strong>Support prioritaire</strong>Réponse sous 4h</span></li></ul><button class="btn-plan btn-pp" onclick="scrollToRegister()">Commencer gratuitement</button></div>
+      <div class="p-card"><div class="p-tier">Business</div><div class="p-tagline">Votre empire, sous contrôle</div><div class="p-amount"><span class="p-num">20 000</span><span class="p-cur">FCFA</span></div><div class="p-period">par mois · 14 jours gratuits</div><div class="p-div"></div><div class="p-demo"><strong>💡 Ce que voit la gérante :</strong>Tout du Pro + multi-points de vente, vue consolidée, rapports PDF personnalisés.</div><ul class="p-feats"><li class="p-feat"><span class="p-check">✓</span><span class="p-feat-txt"><strong>Utilisateurs illimités</strong>Autant d'employés que vous voulez</span></li><li class="p-feat"><span class="p-check">✓</span><span class="p-feat-txt"><strong>Tout le plan Pro</strong>Inclus entièrement</span></li><li class="p-feat"><span class="p-check">✓</span><span class="p-feat-txt"><strong>Multi-points de vente</strong>Gérez plusieurs emplacements</span></li><li class="p-feat"><span class="p-check">✓</span><span class="p-feat-txt"><strong>Personnalisation complète</strong>Logo, couleurs, nom de domaine</span></li><li class="p-feat"><span class="p-check">✓</span><span class="p-feat-txt"><strong>Dashboard analytique avancé</strong>KPIs et insights poussés</span></li><li class="p-feat"><span class="p-check">✓</span><span class="p-feat-txt"><strong>Rapports PDF sur mesure</strong>Envoyés automatiquement</span></li><li class="p-feat"><span class="p-check">✓</span><span class="p-feat-txt"><strong>Support dédié 7j/7</strong>Réponse sous 1h</span></li></ul><button class="btn-plan btn-ps" onclick="scrollToRegister()">Commencer gratuitement</button></div>
     </div>
     <p style="text-align:center;margin-top:32px;font-size:14px;color:var(--text2)">🎁 <strong style="color:var(--text)">14 jours gratuits</strong> sur tous les plans — sans engagement</p>
   </div>
@@ -286,7 +267,6 @@ footer{background:var(--text);color:rgba(255,255,255,.5);padding:40px 5%;text-al
   <div class="reg-wrap">
     <div class="reveal" style="text-align:center;margin-bottom:40px"><div class="tag">Inscription</div><div class="s-title" style="font-size:clamp(24px,4vw,40px)">Créez votre compte</div><p class="s-sub" style="margin:0 auto">14 jours gratuits, sans engagement. Configuré en 24h.</p></div>
     <div class="reg-box reveal">
-      <!-- Étape 1 : Infos -->
       <div id="reg-step1" class="paiement-step active">
         <div class="form-row">
           <div class="form-group"><label class="form-label">Nom du commerce *</label><input class="form-input" id="r-nom" placeholder="Ex: Chez Marie" type="text"></div>
@@ -307,7 +287,6 @@ footer{background:var(--text);color:rgba(255,255,255,.5);padding:40px 5%;text-al
         <button class="btn-submit" onclick="goToPaiement()">Continuer vers le paiement 💳</button>
         <div class="guarantee">🔒 Données protégées · Aucun débit pendant l'essai · Résiliable à tout moment</div>
       </div>
-      <!-- Étape 2 : Paiement simulé -->
       <div id="reg-step2" class="paiement-step">
         <button class="btn-back" onclick="goToStep1()">← Retour</button>
         <p style="font-weight:600;margin-bottom:8px;color:var(--text)">Choisissez votre mode de paiement</p>
@@ -321,7 +300,6 @@ footer{background:var(--text);color:rgba(255,255,255,.5);padding:40px 5%;text-al
         <div id="r-err2" class="form-err"></div>
         <button class="btn-submit" id="btn-sub" onclick="soumettre()">Démarrer mon essai gratuit 🚀</button>
       </div>
-      <!-- Succès -->
       <div class="form-success" id="reg-success">
         <div class="success-icon">🎉</div><div class="success-title">Inscription confirmée !</div>
         <p class="success-sub">Nous vous contacterons dans les <strong>24h</strong> via WhatsApp pour configurer votre espace Shopilot.<br><br>Vos 14 jours d'essai commencent maintenant.<br>Aucun débit ne sera effectué.<br><br>Bienvenue dans la famille Shopilot ! 🎊</p>
@@ -366,7 +344,7 @@ if(localStorage.getItem('shopilot_dark')==='1')document.body.classList.add('dark
 function toggleAutreCommerce(){document.getElementById('autre-commerce-group').style.display=document.getElementById('r-type').value==='Autre'?'block':'none'}
 
 let selectedPaiement = 'orange';
-window.selectPaiement = function(el,type){document.querySelectorAll('.paiement-option').forEach(o=>o.classList.remove('selected'));el.classList.add('selected');selectedPaiement=type}
+function selectPaiement(el,type){document.querySelectorAll('.paiement-option').forEach(o=>o.classList.remove('selected'));el.classList.add('selected');selectedPaiement=type}
 
 function goToPaiement(){
   const nom=document.getElementById('r-nom').value.trim();
