@@ -3,7 +3,7 @@
   X-XSS-Protection: 1; mode=block
   X-Content-Type-Options: nosniff
   Referrer-Policy: strict-origin-when-cross-origin
-  Content-Security-Policy: default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://www.gstatic.com https://cdn.jsdelivr.net https://cdn.sheetjs.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; connect-src 'self' https://*.firebaseio.com https://*.firebasedatabase.app https://firebaseinstallations.googleapis.com https://*.googleapis.com; img-src 'self' data: blob:; frame-src 'none'; object-src 'none'; base-uri 'self'; form-action 'self'
+  Content-Security-Policy: default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://www.gstatic.com https://cdn.jsdelivr.net https://cdn.sheetjs.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; connect-src 'self' https://*.firebaseio.com https://*.firebasedatabase.app https://firebaseinstallations.googleapis.com https://*.googleapis.com https://www.gstatic.com https://wa.me; img-src 'self' data: blob:; frame-src 'none'; object-src 'none'; base-uri 'self'; form-action 'self' https://wa.me
 
 /shopilot-dashboard.html
   X-Robots-Tag: noindex, nofollow, noarchive
@@ -14,3 +14,5 @@
 /admin.html
   X-Robots-Tag: noindex, nofollow, noarchive
   Cache-Control: no-cache, no-store, must-revalidate
+  Pragma: no-cache
+  Expires: 0
