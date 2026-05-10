@@ -426,6 +426,8 @@ window.logout=function(){
 window.toggleDark=function(){document.body.classList.toggle('dark');localStorage.setItem('shopilot_dark',document.body.classList.contains('dark')?'1':'0')};
 if(localStorage.getItem('shopilot_dark')==='1')document.body.classList.add('dark');
 
+let isApprouvingClient = false;
+
 // ── FIREBASE INIT ──────────────────────────────────────
 function initFirebase(){
   demandesUnsubscribe=onValue(ref(db,'demandes'),(snapshot)=>{
@@ -436,15 +438,16 @@ function initFirebase(){
     if(document.getElementById('page-dashboard').style.display!=='none')renderDashboard();
   });
   clientsUnsubscribe=onValue(ref(db,'clients'),(snapshot)=>{
-    clientsData=[];
-    snapshot.forEach(child=>clientsData.push({id:child.key,...child.val()}));
-    // Toujours re-rendre si la page clients ou dashboard est visible
+    // Reconstruire clientsData depuis le snapshot complet Firebase — source de vérité unique
+    const nouveau=[];
+    snapshot.forEach(child=>nouveau.push({id:child.key,...child.val()}));
+    clientsData=nouveau;
+    updateBadge();
     const pageClients=document.getElementById('page-clients');
     const pageDash=document.getElementById('page-dashboard');
     const pageDetail=document.getElementById('page-client-detail');
     if(pageDash&&pageDash.style.display!=='none')renderDashboard();
     if(pageClients&&pageClients.style.display!=='none')renderClients();
-    // Si on est sur la fiche d'un client, rafraîchir aussi
     if(pageDetail&&pageDetail.style.display!=='none'){
       const nomAffiché=document.getElementById('detail-nom')?.textContent;
       const c=clientsData.find(x=>x.nom===nomAffiché);
@@ -859,7 +862,6 @@ window.approuver=async function(id){
   const statut=plan==='Fondateur'?'active':'trial';
   const dateFin=plan==='Fondateur'?'2099-12-31':new Date(Date.now()+14*24*60*60*1000).toISOString().slice(0,10);
   try{
-    // 1. Créer le client
     await set(ref(db,`clients/${clientId}`),{
       nom:dem.nom,type:dem.type||'—',email:dem.email,phone:dem.phone,
       plan,statut,dateCreation:today(),tsCreation:Date.now(),
@@ -870,9 +872,12 @@ window.approuver=async function(id){
       },
       abonnement:{dateDebut:today(),dateFin}
     });
-    // 2. Supprimer la demande
     await remove(ref(db,`demandes/${id}`));
-    // 3. Naviguer vers clients avant l'alert pour éviter la race condition
+    // Remettre le filtre sur "Tous" pour être sûr de tout voir
+    currentFilter='all';
+    document.querySelectorAll('#filter-row .filter-btn').forEach(b=>b.classList.remove('active'));
+    const allBtn=document.querySelector('#filter-row .filter-btn');
+    if(allBtn)allBtn.classList.add('active');
     showPage('clients');
     alert(`✅ ${dem.nom} approuvé !\n\nMDP Serveur : ${pwdS}\nMDP Gérant : ${pwdG}`);
   }catch(e){alert('❌ Erreur : '+e.message)}
