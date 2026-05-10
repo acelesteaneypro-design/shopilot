@@ -177,6 +177,7 @@ body{font-family:'DM Sans',sans-serif;background:var(--off);color:var(--text);mi
   .main{margin-left:60px;padding:16px}
   .form-row{grid-template-columns:1fr}
   .analytics-grid,.detail-grid{grid-template-columns:1fr 1fr}
+  #page-dashboard > div:nth-child(2){grid-template-columns:1fr!important}
 }
 @media(max-width:480px){.detail-grid{grid-template-columns:1fr 1fr}.analytics-grid{grid-template-columns:1fr}}
 </style>
@@ -218,16 +219,19 @@ body{font-family:'DM Sans',sans-serif;background:var(--off);color:var(--text);mi
     <!-- Dashboard -->
     <div id="page-dashboard">
       <div class="stats-row" id="stats-row"></div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:24px">
+        <div class="card" style="margin-bottom:0">
+          <div class="card-header"><div class="card-title">📊 Répartition par plan</div></div>
+          <div style="padding:20px" id="plans-repartition"></div>
+        </div>
+        <div class="card" style="margin-bottom:0">
+          <div class="card-header"><div class="card-title">📅 Inscriptions par jour</div><span style="font-size:12px;color:var(--text2)">Données réelles Firebase</span></div>
+          <div style="padding:20px"><div id="visits-chart" class="visits-chart"></div></div>
+        </div>
+      </div>
       <div class="card">
         <div class="card-header"><div class="card-title">Clients récents</div><button class="btn-add" onclick="showPage('clients')">Voir tous →</button></div>
         <table class="table" id="recent-table"></table>
-      </div>
-      <!-- Fréquences de visite du site -->
-      <div class="card">
-        <div class="card-header"><div class="card-title">📈 Activité du site (simulée)</div><span style="font-size:12px;color:var(--text2)">Inscriptions par jour</span></div>
-        <div style="padding:20px">
-          <div id="visits-chart" class="visits-chart"></div>
-        </div>
       </div>
     </div>
 
@@ -302,7 +306,7 @@ body{font-family:'DM Sans',sans-serif;background:var(--off);color:var(--text);mi
         <div class="detail-section-body" id="detail-infos"></div>
       </div>
       <div class="detail-section">
-        <div class="detail-section-header">📈 Fréquence de connexion estimée</div>
+        <div class="detail-section-header">💰 Abonnement & facturation</div>
         <div class="detail-section-body">
           <div id="detail-visits"></div>
         </div>
@@ -449,18 +453,62 @@ function updateBadge(){document.getElementById('badge-count').textContent=demand
 
 // ── DASHBOARD ──────────────────────────────────────────
 function renderDashboard(){
+  // Stats réelles calculées depuis Firebase
+  const total=clientsData.length;
   const actifs=clientsData.filter(c=>c.statut==='active'||c.plan==='Fondateur').length;
   const essai=clientsData.filter(c=>c.statut==='trial'&&c.plan!=='Fondateur').length;
+  const inactifs=clientsData.filter(c=>c.statut==='inactive').length;
   const enRetard=clientsData.filter(c=>c.abonnement?.dateFin&&c.abonnement.dateFin<today()&&c.plan!=='Fondateur').length;
-  const rev=clientsData.filter(c=>c.statut!=='inactive'&&c.plan!=='Fondateur').reduce((s,c)=>s+(c.plan==='Starter'?5000:c.plan==='Pro'?10000:20000),0);
+
+  // MRR réel : somme des abonnements actifs uniquement
+  const mrr=clientsData.filter(c=>(c.statut==='active'||c.plan==='Fondateur')&&c.plan!=='Fondateur').reduce((s,c)=>s+(c.plan==='Starter'?5000:c.plan==='Pro'?10000:20000),0);
+
+  // Taux de conversion demandes → clients (total historique estimé)
+  const totalDemandes=demandesData.length+total; // demandes en attente + ceux déjà convertis
+  const tauxConversion=totalDemandes>0?Math.round((total/totalDemandes)*100):0;
+
+  // Répartition par plan
+  const parPlan={Starter:0,Pro:0,Business:0,Fondateur:0};
+  clientsData.forEach(c=>{if(parPlan[c.plan]!==undefined)parPlan[c.plan]++});
+
+  // Clients créés ce mois-ci
+  const moisCourant=new Date().toISOString().slice(0,7);
+  const nouveauxMois=clientsData.filter(c=>c.dateCreation&&c.dateCreation.startsWith(moisCourant)).length;
+
+  // Alertes : abonnements expirant dans 7 jours
+  const dans7j=new Date(Date.now()+7*24*60*60*1000).toISOString().slice(0,10);
+  const expirentBientot=clientsData.filter(c=>c.abonnement?.dateFin&&c.abonnement.dateFin>=today()&&c.abonnement.dateFin<=dans7j&&c.plan!=='Fondateur').length;
+
   document.getElementById('stats-row').innerHTML=`
-    <div class="stat-box"><div class="stat-box-icon">🏪</div><div class="stat-box-val">${clientsData.length}</div><div class="stat-box-label">Total clients</div></div>
+    <div class="stat-box"><div class="stat-box-icon">🏪</div><div class="stat-box-val">${total}</div><div class="stat-box-label">Total clients</div><div class="stat-box-trend trend-up">+${nouveauxMois} ce mois</div></div>
     <div class="stat-box"><div class="stat-box-icon">✅</div><div class="stat-box-val">${actifs}</div><div class="stat-box-label">Clients actifs</div></div>
     <div class="stat-box"><div class="stat-box-icon">⏳</div><div class="stat-box-val">${essai}</div><div class="stat-box-label">En période d'essai</div></div>
-    <div class="stat-box"><div class="stat-box-icon">💰</div><div class="stat-box-val">${rev.toLocaleString('fr-FR')} F</div><div class="stat-box-label">Revenus/mois estimés</div><div class="stat-box-trend trend-up">MRR</div></div>
+    <div class="stat-box"><div class="stat-box-icon">💰</div><div class="stat-box-val">${mrr.toLocaleString('fr-FR')} F</div><div class="stat-box-label">MRR réel</div><div class="stat-box-trend trend-up">Revenus mensuels</div></div>
     <div class="stat-box"><div class="stat-box-icon">📥</div><div class="stat-box-val">${demandesData.length}</div><div class="stat-box-label">Demandes en attente</div></div>
-    ${enRetard>0?`<div class="stat-box"><div class="stat-box-icon">🔴</div><div class="stat-box-val">${enRetard}</div><div class="stat-box-label">Paiement en retard</div></div>`:''}
+    <div class="stat-box"><div class="stat-box-icon">📊</div><div class="stat-box-val">${tauxConversion}%</div><div class="stat-box-label">Taux de conversion</div><div class="stat-box-trend trend-up">Demandes → Clients</div></div>
+    ${enRetard>0?`<div class="stat-box"><div class="stat-box-icon">🔴</div><div class="stat-box-val">${enRetard}</div><div class="stat-box-label">Paiements en retard</div></div>`:''}
+    ${expirentBientot>0?`<div class="stat-box" style="border-color:var(--orange)"><div class="stat-box-icon">⚠️</div><div class="stat-box-val">${expirentBientot}</div><div class="stat-box-label">Expirent dans 7 jours</div></div>`:''}
   `;
+
+  // Répartition plans
+  const planColors={Starter:'var(--blue-glow)',Pro:'rgba(27,79,216,.15)',Business:'rgba(212,175,55,.15)',Fondateur:'rgba(212,175,55,.25)'};
+  const planIcons={Starter:'🚀',Pro:'⭐',Business:'💼',Fondateur:'🥇'};
+  const planSection=document.getElementById('plans-repartition');
+  if(planSection){
+    planSection.innerHTML=Object.entries(parPlan).map(([plan,nb])=>`
+      <div style="display:flex;align-items:center;gap:10px;margin-bottom:10px">
+        <span style="font-size:16px">${planIcons[plan]}</span>
+        <span style="font-size:13px;font-weight:600;width:80px;color:var(--text)">${plan}</span>
+        <div style="flex:1;background:var(--off);border-radius:4px;height:20px;overflow:hidden">
+          <div style="height:100%;background:${plan==='Fondateur'||plan==='Business'?'linear-gradient(90deg,#D4AF37,#F5C842)':'linear-gradient(90deg,var(--blue),var(--blue-light))'};width:${total>0?Math.round((nb/total)*100):0}%;border-radius:4px;display:flex;align-items:center;justify-content:flex-end;padding-right:6px">
+            ${nb>0?`<span style="font-size:10px;font-weight:700;color:white">${nb}</span>`:''}
+          </div>
+        </div>
+        <span style="font-size:12px;color:var(--text2);width:30px;text-align:right">${total>0?Math.round((nb/total)*100):0}%</span>
+      </div>`).join('')
+    +'<div style="font-size:12px;color:var(--text2);margin-top:8px;text-align:right">Total : '+total+' client'+(total>1?'s':'')+'</div>';
+  }
+
   const recent=clientsData.slice().reverse().slice(0,5);
   document.getElementById('recent-table').innerHTML=recent.length?`
     <thead><tr><th>Commerce</th><th>Plan</th><th>Statut</th><th>Créé le</th></tr></thead>
@@ -470,35 +518,41 @@ function renderDashboard(){
       <td><span class="badge ${getBadgeClass(c)}">${getBadgeText(c)}</span></td>
       <td>${fmt(c.dateCreation)}</td>
     </tr>`).join('')}</tbody>`:'<tr><td colspan="4" style="text-align:center;padding:40px;color:var(--text2)">Aucun client</td></tr>';
-  renderVisitsChart();
+
+  renderInscriptionsChart();
 }
 
-// ── CHART FRÉQUENCES DE VISITE ──────────────────────────
-function renderVisitsChart(){
+// ── CHART INSCRIPTIONS RÉELLES PAR JOUR DE LA SEMAINE ──
+function renderInscriptionsChart(){
   const days=['Lun','Mar','Mer','Jeu','Ven','Sam','Dim'];
-  // Données simulées basées sur le nb de clients créés par jour
   const byDay=Array(7).fill(0);
   clientsData.forEach(c=>{
     if(c.tsCreation){const d=new Date(c.tsCreation);byDay[d.getDay()===0?6:d.getDay()-1]++}
   });
-  // Ajout d'un baseline simulé pour rendre visible
-  const baseline=[8,12,10,15,11,6,4];
-  const data=byDay.map((v,i)=>v+baseline[i]);
-  const max=Math.max(...data,1);
+  // Aussi compter les demandes
+  demandesData.forEach(d=>{
+    if(d.ts){const dd=new Date(d.ts);byDay[dd.getDay()===0?6:dd.getDay()-1]++}
+  });
+  const max=Math.max(...byDay,1);
   const chart=document.getElementById('visits-chart');
   if(!chart)return;
-  const peakIdx=data.indexOf(Math.max(...data));
-  chart.innerHTML=days.map((d,i)=>`
-    <div class="visit-row">
-      <div class="visit-label">${d}</div>
-      <div class="visit-bar-wrap">
-        <div class="visit-bar ${data[i]===0?'visit-bar-zero':''}" style="width:${Math.round((data[i]/max)*100)}%">
-          ${data[i]>0?`<span class="visit-bar-val">${data[i]}</span>`:''}
+  const peakIdx=byDay.indexOf(Math.max(...byDay));
+  const totalInscriptions=byDay.reduce((s,v)=>s+v,0);
+  chart.innerHTML=(totalInscriptions===0
+    ?'<p style="color:var(--text2);font-size:13px;text-align:center;padding:20px">Aucune inscription enregistrée pour le moment.</p>'
+    :days.map((d,i)=>`
+      <div class="visit-row">
+        <div class="visit-label">${d}</div>
+        <div class="visit-bar-wrap">
+          <div class="visit-bar ${byDay[i]===0?'visit-bar-zero':''}" style="width:${Math.round((byDay[i]/max)*100)}%">
+            ${byDay[i]>0?`<span class="visit-bar-val">${byDay[i]}</span>`:''}
+          </div>
         </div>
-      </div>
-    </div>`).join('')+
-    `<div class="visit-peak">📈 Pic d'activité : <strong>${days[peakIdx]}</strong> avec ${data[peakIdx]} visites estimées</div>`;
+      </div>`).join('')
+    +(byDay[peakIdx]>0?`<div class="visit-peak">📈 Jour le plus actif : <strong>${days[peakIdx]}</strong> · ${byDay[peakIdx]} inscription${byDay[peakIdx]>1?'s':''}</div>`:'')
+  );
 }
+
 
 // ── CLIENTS ────────────────────────────────────────────
 window.filterClients=function(f,btn){
@@ -566,17 +620,18 @@ window.ouvrirPageClient=function(id){
     <div class="info-row"><span class="info-label">👑 MDP Gérant</span><span class="info-val"><code>${c.acces?.mdpGerant||'—'}</code></span></div>
     <div class="info-row"><span class="info-label">🌐 Lien app</span><span class="info-val"><a href="${c.acces?.lienServeur||'#'}" target="_blank">Ouvrir →</a></span></div>
   `;
-  // Fréquences de visite simulées par heure
-  const heures=['6h','8h','10h','12h','14h','16h','18h','20h','22h'];
-  const seed=c.nom.length+nbJours;
-  const visits=heures.map((_,i)=>Math.round(Math.abs(Math.sin(seed*i+1))*18+2));
-  const maxV=Math.max(...visits);
-  const peakH=heures[visits.indexOf(maxV)];
+  // Fréquences de visite — remplacées par infos abonnement réelles
+  const joursPaye=c.abonnement?.dateDebut?Math.max(0,Math.ceil((new Date(today())-new Date(c.abonnement.dateDebut+'T00:00:00'))/(1000*60*60*24))):0;
+  const prixMois=c.plan==='Starter'?5000:c.plan==='Pro'?10000:c.plan==='Business'?20000:0;
+  const totalPaye=c.plan==='Fondateur'?0:Math.floor(joursPaye/30)*prixMois;
   document.getElementById('detail-visits').innerHTML=`
-    <div class="sparkline">${visits.map(v=>`<div class="spark-bar" style="height:${Math.round((v/maxV)*100)}%;background:${v===maxV?'var(--blue)':'var(--blue-glow);border:1px solid var(--blue)'}" title="${v} connexions estimées"></div>`).join('')}</div>
-    <div style="display:flex;justify-content:space-between;margin-top:4px">${heures.map(h=>`<span style="font-size:10px;color:var(--text2)">${h}</span>`).join('')}</div>
-    <div class="visit-peak" style="margin-top:10px">⏰ Pic d'utilisation estimé autour de <strong>${peakH}</strong> · ${maxV} connexions/jour en moyenne</div>
-    <p style="font-size:12px;color:var(--text2);margin-top:8px">📊 Ces données sont des estimations basées sur le profil du commerce et son secteur d'activité.</p>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+      <div class="analytics-card"><div class="analytics-val">${joursPaye} j</div><div class="analytics-label">Jours d'utilisation</div></div>
+      <div class="analytics-card"><div class="analytics-val">${c.plan==='Fondateur'?'Illimité':Math.floor(joursPaye/30)+' mois'}</div><div class="analytics-label">Ancienneté</div></div>
+      <div class="analytics-card"><div class="analytics-val">${prixMois>0?prixMois.toLocaleString('fr-FR')+' F':'Fondateur'}</div><div class="analytics-label">Tarif mensuel</div></div>
+      <div class="analytics-card"><div class="analytics-val">${totalPaye>0?totalPaye.toLocaleString('fr-FR')+' F':'—'}</div><div class="analytics-label">Total encaissé estimé</div></div>
+    </div>
+    <p style="font-size:12px;color:var(--text2);margin-top:12px">📌 Les statistiques d'utilisation détaillées (commandes, CA) sont stockées dans la base Firebase propre à chaque client et ne sont pas accessibles depuis ce dashboard.</p>
   `;
   // Timeline
   const events=[];

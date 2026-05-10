@@ -166,10 +166,7 @@ footer{background:#0D1B40;color:rgba(255,255,255,.5);padding:40px 5%;text-align:
 .paiement-divider span{font-size:12px;color:var(--text2);font-weight:500}
 .btn-back{background:none;border:none;color:var(--blue);font-size:14px;cursor:pointer;font-family:inherit;margin-bottom:12px}
 
-/* Compteur live */
-.live-counter{display:inline-flex;align-items:center;gap:8px;background:rgba(0,166,81,0.1);border:1px solid rgba(0,166,81,0.2);border-radius:30px;padding:6px 16px;font-size:13px;font-weight:600;color:var(--green);margin-bottom:16px}
-.live-dot{width:8px;height:8px;border-radius:50%;background:var(--green);animation:pulse 1.5s infinite}
-
+/* Compteur live - SUPPRIMÉ */
 /* Barre confiance */
 .trust-bar{background:var(--white);border-top:1px solid var(--border);border-bottom:1px solid var(--border);padding:20px 5%;display:flex;gap:32px;justify-content:center;align-items:center;flex-wrap:wrap}
 .trust-item{display:flex;align-items:center;gap:8px;font-size:13px;color:var(--text2);font-weight:500}
@@ -185,6 +182,16 @@ footer{background:#0D1B40;color:rgba(255,255,255,.5);padding:40px 5%;text-align:
 .faq-chevron{transition:transform .3s;font-style:normal;font-size:12px}
 .faq-chevron.open{transform:rotate(180deg)}
 
+/* Contact */
+.contact-btn-card{display:flex;flex-direction:column;align-items:center;gap:6px;padding:24px;border-radius:20px;border:2px solid var(--border);background:var(--white);text-decoration:none;transition:all .2s;text-align:center}
+.contact-btn-card:hover{border-color:var(--blue);transform:translateY(-3px);box-shadow:0 12px 32px rgba(27,79,216,.1)}
+.contact-btn-wa{border-color:rgba(0,166,81,.3)}.contact-btn-wa:hover{border-color:var(--green);box-shadow:0 12px 32px rgba(0,166,81,.1)}
+.contact-btn-icon{font-size:32px}
+.contact-btn-label{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:var(--text2)}
+.contact-btn-val{font-size:13px;font-weight:600;color:var(--text)}
+
+@media(max-width:600px){.contact-btns-grid{grid-template-columns:1fr!important}}
+
 @media(max-width:900px){.nav-links{display:none}.feat-grid,.pricing-grid,.steps-grid{grid-template-columns:1fr 1fr}.targets-grid{grid-template-columns:repeat(2,1fr)}.step-line{display:none}.phone-side{display:none}}
 @media(max-width:600px){.feat-grid,.pricing-grid,.steps-grid,.targets-grid{grid-template-columns:1fr}.form-row{grid-template-columns:1fr}.hero-kpis .kpi-div{display:none}}
 </style>
@@ -199,6 +206,7 @@ footer{background:#0D1B40;color:rgba(255,255,255,.5);padding:40px 5%;text-align:
     <a href="#pricing">Tarifs</a>
     <a href="#temoignages">Témoignages</a>
     <a href="#faq">FAQ</a>
+    <a href="#contact">Contact</a>
   </div>
   <div class="nav-right">
     <button class="dark-toggle" onclick="toggleDark()">🌓</button>
@@ -210,8 +218,6 @@ footer{background:#0D1B40;color:rgba(255,255,255,.5);padding:40px 5%;text-align:
 <section class="hero">
   <div class="hero-bg"><div class="orb orb-1"></div><div class="orb orb-2"></div><div class="grid-bg"></div></div>
   <div class="hero-inner">
-    <div class="live-counter"><div class="live-dot"></div><span id="live-count">12</span> commerçants actifs en ce moment</div>
-    <div class="pill"><div class="pill-dot"></div>Spécialement conçu pour l'Afrique</div>
     <h1>Pilotez votre commerce<br>comme un <span class="accent">grand</span></h1>
     <p class="hero-desc">Shopilot donne à votre restaurant, maquis, boutique ou salon les mêmes outils que les grandes chaînes — sans la complexité, sans le prix élevé.</p>
     <div class="hero-btns">
@@ -364,7 +370,7 @@ footer{background:#0D1B40;color:rgba(255,255,255,.5);padding:40px 5%;text-align:
   <div class="container">
     <div class="reveal" style="text-align:center"><div class="tag">Témoignages</div><div class="s-title">Ils nous font confiance</div></div>
     <div class="testi-grid reveal">
-      <div class="testi"><div class="stars">★★★★★</div><div class="testi-txt">"Avant Shopilot, je me déplaçais au restaurant tous les soirs pour compter la caisse. Maintenant je reçois mon rapport sur mon téléphone à 23h pile. C'est incroyable."</div><div class="testi-author"><div class="avatar">A</div><div><div class="a-name">Adjoua K.</div><div class="a-role">Gérante — KLO ALLIÈ, Abidjan</div></div></div></div>
+      <div class="testi"><div class="stars">★★★★★</div><div class="testi-txt">"Avant Shopilot, je me déplaçais au restaurant tous les soirs pour compter la caisse. Maintenant je reçois mon rapport sur mon téléphone à 23h pile. C'est incroyable."</div><div class="testi-author"><div class="avatar">K</div><div><div class="a-name">KLO ALLIÈ</div><div class="a-role">Restaurant — Abidjan, Côte d'Ivoire</div></div></div></div>
     </div>
   </div>
 </section>
@@ -451,10 +457,49 @@ footer{background:#0D1B40;color:rgba(255,255,255,.5);padding:40px 5%;text-align:
   </div>
 </section>
 
+<!-- ── CONTACT ── -->
+<section id="contact" style="background:var(--off);padding:100px 5%">
+  <div class="container" style="max-width:760px">
+    <div class="reveal" style="text-align:center;margin-bottom:48px">
+      <div class="tag">Contact</div>
+      <div class="s-title">Une question ? Écrivez-nous</div>
+      <p class="s-sub" style="margin:0 auto">Nous répondons sous 24h en semaine. Pour une réponse rapide, WhatsApp est le meilleur canal.</p>
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:24px;margin-bottom:40px" class="reveal contact-btns-grid">
+      <a href="mailto:acelesteaneypro@gmail.com" class="contact-btn-card">
+        <div class="contact-btn-icon">📧</div>
+        <div class="contact-btn-label">Email</div>
+        <div class="contact-btn-val">acelesteaneypro@gmail.com</div>
+      </a>
+      <a href="https://wa.me/2250712962296" target="_blank" class="contact-btn-card contact-btn-wa">
+        <div class="contact-btn-icon">💬</div>
+        <div class="contact-btn-label">WhatsApp</div>
+        <div class="contact-btn-val">+225 07 12 96 22 96</div>
+      </a>
+    </div>
+    <div class="reg-box reveal" id="contact-form-box">
+      <p style="font-family:'Syne',sans-serif;font-weight:700;font-size:16px;margin-bottom:20px;color:var(--text)">✉️ Envoyer un message</p>
+      <div class="form-row">
+        <div class="form-group"><label class="form-label">Votre nom *</label><input class="form-input" id="c-nom" placeholder="Ex: Jean Kouassi" type="text"></div>
+        <div class="form-group"><label class="form-label">Votre email *</label><input class="form-input" id="c-email" placeholder="votre@email.com" type="email"></div>
+      </div>
+      <div class="form-group"><label class="form-label">Sujet *</label><select class="form-input" id="c-sujet"><option value="">Choisissez un sujet...</option><option>Question sur un plan tarifaire</option><option>Problème technique</option><option>Demande de démo</option><option>Partenariat</option><option>Autre</option></select></div>
+      <div class="form-group"><label class="form-label">Message *</label><textarea class="form-input" id="c-message" rows="4" placeholder="Décrivez votre question ou demande..." style="resize:vertical"></textarea></div>
+      <div id="c-err" class="form-err"></div>
+      <button class="btn-submit" id="btn-contact" onclick="envoyerMessage()">Envoyer le message 📤</button>
+      <div id="c-success" style="display:none;text-align:center;padding:20px 0">
+        <div style="font-size:40px;margin-bottom:10px">✅</div>
+        <div style="font-family:'Syne',sans-serif;font-size:18px;font-weight:800;color:var(--text);margin-bottom:6px">Message envoyé !</div>
+        <p style="font-size:14px;color:var(--text2)">Nous vous répondrons sous 24h à l'adresse indiquée.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
 <footer>
   <div class="f-logo">Shopilot</div>
   <p style="font-size:14px;color:rgba(255,255,255,.5);max-width:400px;margin:8px auto">Pilotez votre commerce — La gestion simplifiée pour l'Afrique</p>
-  <div class="f-links"><a href="#features">Fonctionnalités</a><a href="#pricing">Tarifs</a><a href="#temoignages">Témoignages</a><a href="#faq">FAQ</a><a href="#register">Inscription</a><a href="confidentialite.html">Confidentialité & CGU</a></div>
+  <div class="f-links"><a href="#features">Fonctionnalités</a><a href="#pricing">Tarifs</a><a href="#temoignages">Témoignages</a><a href="#faq">FAQ</a><a href="#contact">Contact</a><a href="#register">Inscription</a><a href="confidentialite.html">Confidentialité & CGU</a></div>
   <div style="font-size:12px;margin-top:16px">© 2026 Shopilot. Tous droits réservés.</div>
 </footer>
 
@@ -493,12 +538,24 @@ footer{background:#0D1B40;color:rgba(255,255,255,.5);padding:40px 5%;text-align:
     if(!isOpen){a.classList.add('open');ch.classList.add('open');}
   };
 
-  // Compteur live simulé
-  let count=12;
-  setInterval(()=>{
-    if(Math.random()>.5)count=Math.max(8,Math.min(25,count+(Math.random()>.5?1:-1)));
-    const el=document.getElementById('live-count');if(el)el.textContent=count;
-  },7000);
+  // Contact
+  window.envoyerMessage=function(){
+    const nom=document.getElementById('c-nom').value.trim();
+    const email=document.getElementById('c-email').value.trim();
+    const sujet=document.getElementById('c-sujet').value;
+    const message=document.getElementById('c-message').value.trim();
+    const err=document.getElementById('c-err');
+    if(!nom||!email||!sujet||!message){err.textContent='⚠️ Veuillez remplir tous les champs.';err.style.display='block';return}
+    if(!email.includes('@')){err.textContent='⚠️ Email invalide.';err.style.display='block';return}
+    err.style.display='none';
+    const btn=document.getElementById('btn-contact');
+    btn.textContent='⏳ Envoi...';btn.disabled=true;
+    const msg=`📩 *Nouveau message Shopilot*%0A%0A👤 Nom : ${nom}%0A📧 Email : ${email}%0A📋 Sujet : ${sujet}%0A%0A💬 Message :%0A${encodeURIComponent(message)}`;
+    window.open(`https://wa.me/2250712962296?text=${msg}`,'_blank');
+    document.getElementById('c-success').style.display='block';
+    document.getElementById('c-nom').closest('div').style.display='none';
+    document.querySelectorAll('#contact-form-box .form-group, #contact-form-box p, #btn-contact').forEach(el=>el.style.display='none');
+  };
 
   let selectedPaiement='orange';
   window.selectPaiement=function(el,type){
