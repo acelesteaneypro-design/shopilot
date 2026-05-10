@@ -429,15 +429,27 @@ if(localStorage.getItem('shopilot_dark')==='1')document.body.classList.add('dark
 // ── FIREBASE INIT ──────────────────────────────────────
 function initFirebase(){
   demandesUnsubscribe=onValue(ref(db,'demandes'),(snapshot)=>{
-    demandesData=[];snapshot.forEach(child=>demandesData.push({id:child.key,...child.val()}));
+    demandesData=[];
+    snapshot.forEach(child=>demandesData.push({id:child.key,...child.val()}));
     updateBadge();
     if(document.getElementById('page-demandes').style.display!=='none')renderDemandes();
     if(document.getElementById('page-dashboard').style.display!=='none')renderDashboard();
   });
   clientsUnsubscribe=onValue(ref(db,'clients'),(snapshot)=>{
-    clientsData=[];snapshot.forEach(child=>clientsData.push({id:child.key,...child.val()}));
-    if(document.getElementById('page-dashboard').style.display!=='none')renderDashboard();
-    if(document.getElementById('page-clients').style.display!=='none')renderClients();
+    clientsData=[];
+    snapshot.forEach(child=>clientsData.push({id:child.key,...child.val()}));
+    // Toujours re-rendre si la page clients ou dashboard est visible
+    const pageClients=document.getElementById('page-clients');
+    const pageDash=document.getElementById('page-dashboard');
+    const pageDetail=document.getElementById('page-client-detail');
+    if(pageDash&&pageDash.style.display!=='none')renderDashboard();
+    if(pageClients&&pageClients.style.display!=='none')renderClients();
+    // Si on est sur la fiche d'un client, rafraîchir aussi
+    if(pageDetail&&pageDetail.style.display!=='none'){
+      const nomAffiché=document.getElementById('detail-nom')?.textContent;
+      const c=clientsData.find(x=>x.nom===nomAffiché);
+      if(c)ouvrirPageClient(c.id);
+    }
   });
   document.getElementById('topbar-date').textContent=new Date().toLocaleDateString('fr-FR',{weekday:'long',day:'numeric',month:'long',year:'numeric'});
   showPage('dashboard');
@@ -843,14 +855,27 @@ window.approuver=async function(id){
   const dem=demandesData.find(x=>x.id===id);if(!dem)return;
   const pwdS=genPwd(dem.nom);const pwdG='Gerant'+genPwd(dem.nom).slice(-4);
   const clientId=dem.nom.toLowerCase().replace(/\s+/g,'-').replace(/[^a-z0-9-]/g,'').substring(0,20)+'-'+Date.now().toString().slice(-4);
-  const plan=dem.plan||'Pro';const statut=plan==='Fondateur'?'active':'trial';
+  const plan=(dem.plan||'Pro').replace(/ —.*$/,'');
+  const statut=plan==='Fondateur'?'active':'trial';
   const dateFin=plan==='Fondateur'?'2099-12-31':new Date(Date.now()+14*24*60*60*1000).toISOString().slice(0,10);
   try{
-    await set(ref(db,`clients/${clientId}`),{nom:dem.nom,type:dem.type,email:dem.email,phone:dem.phone,plan,statut,dateCreation:today(),tsCreation:Date.now(),acces:{lienServeur:`https://shopilot.pages.dev/app/${clientId}/`,lienGerant:`https://shopilot.pages.dev/app/${clientId}/gerant`,mdpServeur:pwdS,mdpGerant:pwdG},abonnement:{dateDebut:today(),dateFin}});
+    // 1. Créer le client
+    await set(ref(db,`clients/${clientId}`),{
+      nom:dem.nom,type:dem.type||'—',email:dem.email,phone:dem.phone,
+      plan,statut,dateCreation:today(),tsCreation:Date.now(),
+      acces:{
+        lienServeur:`https://shopilot.pages.dev/app/${clientId}/`,
+        lienGerant:`https://shopilot.pages.dev/app/${clientId}/gerant`,
+        mdpServeur:pwdS,mdpGerant:pwdG
+      },
+      abonnement:{dateDebut:today(),dateFin}
+    });
+    // 2. Supprimer la demande
     await remove(ref(db,`demandes/${id}`));
+    // 3. Naviguer vers clients avant l'alert pour éviter la race condition
+    showPage('clients');
     alert(`✅ ${dem.nom} approuvé !\n\nMDP Serveur : ${pwdS}\nMDP Gérant : ${pwdG}`);
-    showPage('dashboard');
-  }catch(e){alert('❌ Erreur.')}
+  }catch(e){alert('❌ Erreur : '+e.message)}
 };
 
 window.rejeter=async function(id){if(!confirm('Rejeter cette demande ?'))return;try{await remove(ref(db,`demandes/${id}`))}catch(e){}};

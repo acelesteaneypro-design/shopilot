@@ -4,6 +4,8 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Shopilot — Politique de confidentialité & CGU</title>
+<link rel="icon" type="image/jpeg" href="favicon.jpg">
+<link rel="apple-touch-icon" href="favicon.jpg">
 <link href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=DM+Sans:wght@400;500;600&display=swap" rel="stylesheet">
 <style>
 :root{--blue:#1B4FD8;--blue-l:#3B6EF8;--blue-d:#0F2E8A;--blue-xl:#EEF2FF;--text:#0D1B40;--text2:#5A6A8A;--border:#E0E7FF;--off:#F5F7FF;--green:#00A651;--red:#E74C3C}
@@ -47,7 +49,7 @@ tr:nth-child(even) td{background:var(--off)}
 .contact-box p{color:rgba(255,255,255,.7);margin:0}
 .contact-box a{color:#93c5fd;font-weight:600}
 .last-updated{font-size:12px;color:var(--text2);text-align:center;margin-top:24px}
-footer{background:var(--text);color:rgba(255,255,255,.5);text-align:center;padding:28px 5%;font-size:13px}
+footer{background:#0D1B40;color:rgba(255,255,255,.5);text-align:center;padding:28px 5%;font-size:13px}
 footer a{color:rgba(255,255,255,.4);text-decoration:none;margin:0 10px}
 footer a:hover{color:white}
 </style>
@@ -61,7 +63,7 @@ footer a:hover{color:white}
 
 <div class="hero-bar">
   <h1>Politique de confidentialité & CGU</h1>
-  <p>Dernière mise à jour : 8 mai 2026 · Applicable à partir du 8 mai 2026</p>
+  <p>Dernière mise à jour : 10 mai 2026 · Applicable à partir du 10 mai 2026</p>
 </div>
 
 <div class="toc-bar">
@@ -101,7 +103,7 @@ footer a:hover{color:white}
         <tr><td>Email</td><td>Rapports automatiques</td><td><span class="badge badge-green">Oui</span></td></tr>
         <tr><td>WhatsApp</td><td>Envoi des accès et support</td><td><span class="badge badge-green">Oui</span></td></tr>
         <tr><td>Plan choisi</td><td>Configuration abonnement</td><td><span class="badge badge-green">Oui</span></td></tr>
-        <tr><td>Numéro mobile money</td><td>Paiement après période d'essai</td><td><span class="badge badge-green">Oui</span></td></tr>
+        <tr><td>Informations de paiement</td><td>Numéro mobile money, email de facturation ou email PayPal selon le mode choisi</td><td><span class="badge badge-green">Oui</span></td></tr>
         <tr><td>Nombre d'employés</td><td>Adapter la configuration</td><td><span class="badge badge-orange">Non</span></td></tr>
       </table>
     </div>
@@ -160,7 +162,8 @@ footer a:hover{color:white}
     <h2><span class="num">6</span>Sécurité des données</h2>
     <ul>
       <li><strong>Chiffrement HTTPS</strong> sur toutes les communications</li>
-      <li><strong>Accès par mot de passe</strong> avec blocage après 3 tentatives</li>
+      <li><strong>Mots de passe chiffrés SHA-256</strong> — les mots de passe ne sont jamais stockés en clair, uniquement leur empreinte cryptographique</li>
+      <li><strong>Accès par mot de passe</strong> avec blocage automatique après 5 tentatives échouées</li>
       <li><strong>Isolation des données</strong> — chaque commerce a son espace Firebase séparé</li>
       <li><strong>Serveurs en Europe</strong> (Belgique) soumis au RGPD</li>
     </ul>
@@ -185,7 +188,7 @@ footer a:hover{color:white}
   <div class="section">
     <h2><span class="num">8</span>Paiement et abonnement</h2>
     <h3>8.1 Période d'essai</h3>
-    <p>Shopilot offre <strong>14 jours d'essai gratuit</strong> sur tous les plans. Un moyen de paiement (Orange Money, MTN MoMo ou Wave) est requis à l'inscription mais <strong>aucun débit n'est effectué</strong> pendant la période d'essai.</p>
+    <p>Shopilot offre <strong>14 jours d'essai gratuit</strong> sur les plans Starter et Pro. Un moyen de paiement est requis à l'inscription mais <strong>aucun débit n'est effectué</strong> pendant la période d'essai.</p>
     <h3>8.2 Premier paiement</h3>
     <p>Le premier paiement est déclenché <strong>14 jours après l'inscription</strong>, sauf si vous annulez avant la fin de l'essai. Vous recevrez un rappel 3 jours avant le premier débit.</p>
     <h3>8.3 Modes de paiement acceptés</h3>
@@ -193,11 +196,15 @@ footer a:hover{color:white}
       <li>🟠 <strong>Orange Money</strong> — Côte d'Ivoire, Mali, Burkina Faso, Sénégal</li>
       <li>🟡 <strong>MTN Mobile Money</strong> — Côte d'Ivoire, Ghana, Nigeria, Cameroun</li>
       <li>🌊 <strong>Wave</strong> — Côte d'Ivoire, Sénégal</li>
+      <li>💳 <strong>Carte bancaire</strong> — Visa, Mastercard (international)</li>
+      <li>🅿️ <strong>PayPal</strong> — Pour les clients hors zone mobile money</li>
     </ul>
     <h3>8.4 Sécurité des paiements</h3>
-    <p>Vos informations de paiement sont traitées de manière sécurisée. Shopilot ne stocke pas vos codes secrets mobile money. Les transactions sont protégées par les systèmes de sécurité des opérateurs.</p>
+    <p>Vos informations de paiement sont traitées de manière sécurisée. Shopilot ne stocke pas vos codes secrets mobile money, vos numéros de carte complets, ni vos identifiants PayPal. Seul un email de référence ou numéro de contact est conservé pour la gestion de l'abonnement.</p>
     <h3>8.5 Annulation</h3>
     <p>Vous pouvez annuler à tout moment via WhatsApp. L'annulation prend effet à la fin de la période d'abonnement en cours. Aucun remboursement partiel n'est effectué.</p>
+    <h3>8.6 Plan Business — Sur devis</h3>
+    <p>Le plan Business fait l'objet d'un devis personnalisé établi après analyse de vos besoins spécifiques. Les conditions tarifaires, la durée d'engagement et les modalités de paiement sont définies contractuellement entre Shopilot et le client. Contactez-nous via WhatsApp pour obtenir un devis.</p>
   </div>
 
   <span class="section-anchor" id="cgu"></span>
@@ -206,7 +213,7 @@ footer a:hover{color:white}
     <h3>9.1 Acceptation</h3>
     <p>L'utilisation de Shopilot implique l'acceptation pleine et entière des présentes CGU.</p>
     <h3>9.2 Service</h3>
-    <p>Service d'abonnement mensuel avec <strong>14 jours d'essai gratuit</strong>, sans engagement. Paiement requis pour activer l'essai, aucun débit avant la fin des 14 jours.</p>
+    <p>Service d'abonnement mensuel avec <strong>14 jours d'essai gratuit</strong> sur les plans Starter et Pro, sans engagement. Paiement requis pour activer l'essai, aucun débit avant la fin des 14 jours. Le plan Business fait l'objet d'un contrat spécifique sur devis.</p>
     <h3>9.3 Obligations</h3>
     <ul><li>Fournir des informations exactes</li><li>Ne pas partager vos accès</li><li>Régler votre abonnement dans les délais</li></ul>
     <h3>9.4 Propriété des données</h3>
@@ -215,20 +222,22 @@ footer a:hover{color:white}
     <p>Résiliation possible à tout moment via WhatsApp. Prend effet à la fin de la période en cours.</p>
     <h3>9.6 Droit applicable</h3>
     <p>Droit ivoirien. Tribunaux d'Abidjan, Côte d'Ivoire.</p>
+    <h3>9.7 Plan Business</h3>
+    <p>Les clients du plan Business sont soumis aux termes spécifiques définis dans leur devis et contrat accepté. En cas de contradiction entre les présentes CGU et le contrat Business, les termes du contrat Business prévalent.</p>
   </div>
 
   <div class="contact-box">
     <h3>Une question ?</h3>
     <p style="margin-bottom:12px">Notre équipe vous répond sous 5 jours ouvrés.</p>
-    <p>📱 WhatsApp : <a href="https://wa.me/2250712962296">+225 07 12 96 22 96</a><br>🌐 Site : <a href="index.html">shopilot.pages.dev</a></p>
+    <p>📱 WhatsApp : <a href="https://wa.me/2250712962296">+225 07 12 96 22 96</a><br>📧 Email : <a href="mailto:acelesteaneypro@gmail.com">acelesteaneypro@gmail.com</a><br>🌐 Site : <a href="index.html">shopilot.pages.dev</a></p>
   </div>
 
-  <p class="last-updated">Document applicable à compter du 8 mai 2026 · Shopilot, Abidjan, Côte d'Ivoire</p>
+  <p class="last-updated">Document applicable à compter du 10 mai 2026 · Shopilot, Abidjan, Côte d'Ivoire</p>
 </div>
 
 <footer>
   <div style="margin-bottom:8px"><strong style="color:white">Shopilot</strong> · Pilotez votre commerce</div>
-  <div><a href="index.html">Accueil</a><a href="index.html#pricing">Tarifs</a><a href="confidentialite.html">Confidentialité & CGU</a></div>
+  <div><a href="index.html">Accueil</a><a href="index.html#pricing">Tarifs</a><a href="index.html#contact">Contact</a><a href="confidentialite.html">Confidentialité & CGU</a></div>
   <div style="margin-top:10px;font-size:11px">© 2026 Shopilot. Tous droits réservés.</div>
 </footer>
 

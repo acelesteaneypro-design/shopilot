@@ -15,7 +15,10 @@
 nav{position:fixed;top:0;left:0;right:0;z-index:100;padding:14px 5%;display:flex;align-items:center;justify-content:space-between;background:rgba(255,255,255,0.92);backdrop-filter:blur(16px);border-bottom:1px solid var(--border);transition:box-shadow .3s}
 .dark nav{background:rgba(30,41,59,0.92)}
 nav.scrolled{box-shadow:0 4px 24px rgba(27,79,216,.08)}
-.logo{font-family:'Syne',sans-serif;font-weight:800;font-size:22px;color:var(--blue);text-decoration:none}.logo span{color:var(--text)}
+.logo img{height:36px;width:auto;display:block}
+/* Suppression fond blanc du logo selon le thème */
+body:not(.dark) .logo img{mix-blend-mode:multiply}
+.dark .logo img{filter:brightness(0) invert(1)}
 .nav-links{display:flex;align-items:center;gap:32px}.nav-links a{font-size:14px;color:var(--text2);text-decoration:none;font-weight:500;transition:color .2s}.nav-links a:hover{color:var(--blue)}
 .nav-right{display:flex;gap:12px;align-items:center}
 .btn-demo{font-size:14px;font-weight:600;color:var(--blue);text-decoration:none;padding:8px 20px;border-radius:30px;border:1.5px solid var(--border);transition:all .2s}.btn-demo:hover{border-color:var(--blue);background:var(--blue-xl)}
@@ -201,7 +204,7 @@ footer{background:#0D1B40;color:rgba(255,255,255,.5);padding:40px 5%;text-align:
 <body>
 
 <nav id="nav">
-  <a class="logo" href="#">Shop<span>ilot</span></a>
+  <a class="logo" href="#"><img src="favicon.jpg" alt="Shopilot"></a>
   <div class="nav-links">
     <a href="#features">Fonctionnalités</a>
     <a href="#pour-qui">Pour qui</a>
@@ -343,28 +346,30 @@ footer{background:#0D1B40;color:rgba(255,255,255,.5);padding:40px 5%;text-align:
 
       <!-- BUSINESS -->
       <div class="p-card business">
-        <div class="feat-badge-business">💼 Pour les grands</div>
+        <div class="feat-badge-business">💼 Sur mesure</div>
         <div class="p-tier">Business</div>
         <div class="p-tagline">Votre empire, sous contrôle total</div>
-        <div class="p-amount"><span class="p-num-business">20 000</span><span class="p-cur">FCFA</span></div>
-        <div class="p-period">par mois · 14 jours gratuits</div>
+        <div class="p-amount" style="flex-direction:column;align-items:flex-start;gap:2px">
+          <span style="font-family:'Syne',sans-serif;font-size:28px;font-weight:800;color:#D4AF37;line-height:1">Sur devis</span>
+          <span style="font-size:13px;color:var(--text2)">Prix selon vos besoins spécifiques</span>
+        </div>
+        <div class="p-period">Engagement flexible · Devis sous 24h</div>
         <div class="p-div"></div>
         <ul class="p-feats">
           <li class="p-feat"><span class="p-check-gold">✓</span><span class="p-feat-txt"><strong>Utilisateurs illimités</strong>Autant d'employés que vous voulez</span></li>
           <li class="p-feat"><span class="p-check-gold">✓</span><span class="p-feat-txt"><strong>Tout le plan Pro</strong>Inclus entièrement</span></li>
           <li class="p-feat"><span class="p-check-gold">✓</span><span class="p-feat-txt"><strong>Multi-points de vente</strong>Gérez plusieurs sites depuis un seul tableau de bord</span></li>
-          <li class="p-feat"><span class="p-check-gold">✓</span><span class="p-feat-txt"><strong>Système 100% modulable</strong>Adaptez Shopilot à vos processus métier spécifiques</span></li>
+          <li class="p-feat"><span class="p-check-gold">✓</span><span class="p-feat-txt"><strong>Système 100% modulable</strong>Adapté à vos processus métier spécifiques</span></li>
           <li class="p-feat"><span class="p-check-gold">✓</span><span class="p-feat-txt"><strong>Dashboard analytique avancé</strong>KPIs consolidés, vue multi-sites</span></li>
           <li class="p-feat"><span class="p-check-gold">✓</span><span class="p-feat-txt"><strong>Personnalisation complète</strong>Logo, couleurs, nom de domaine propre</span></li>
-          <li class="p-feat"><span class="p-check-gold">✓</span><span class="p-feat-txt"><strong>Rapports PDF sur mesure</strong>Générés et envoyés automatiquement</span></li>
           <li class="p-feat"><span class="p-check-gold">✓</span><span class="p-feat-txt"><strong>Intégrations personnalisées</strong>Connectez vos outils existants</span></li>
-          <li class="p-feat"><span class="p-check-gold">✓</span><span class="p-feat-txt"><strong>Support dédié 7j/7</strong>Réponse sous 1h, gestionnaire attitré</span></li>
+          <li class="p-feat"><span class="p-check-gold">✓</span><span class="p-feat-txt"><strong>Support dédié 7j/7</strong>Gestionnaire attitré, réponse sous 1h</span></li>
         </ul>
-        <div class="p-upgrade-hint-gold">👑 Votre entreprise a des besoins uniques ? On s'adapte à vous.</div>
-        <button class="btn-plan btn-pb" onclick="scrollToRegister()">Commencer gratuitement</button>
+        <div class="p-upgrade-hint-gold">👑 Chaque Business est unique. Parlons de vos besoins et construisons ensemble votre solution.</div>
+        <a href="https://wa.me/2250712962296?text=Bonjour%20Shopilot%2C%20je%20suis%20int%C3%A9ress%C3%A9%20par%20le%20plan%20Business.%20Pouvez-vous%20me%20faire%20un%20devis%20%3F" target="_blank" class="btn-plan btn-pb" style="display:block;text-align:center;text-decoration:none">Obtenir un devis →</a>
       </div>
     </div>
-    <p style="text-align:center;margin-top:32px;font-size:14px;color:var(--text2)">🎁 <strong style="color:var(--text)">14 jours gratuits</strong> sur tous les plans — sans engagement · Résiliable à tout moment</p>
+    <p style="text-align:center;margin-top:32px;font-size:14px;color:var(--text2)">🎁 <strong style="color:var(--text)">14 jours gratuits</strong> sur les plans Starter et Pro — sans engagement · Résiliable à tout moment · Plan Business sur devis</p>
   </div>
 </section>
 
@@ -408,16 +413,9 @@ footer{background:#0D1B40;color:rgba(255,255,255,.5);padding:40px 5%;text-align:
           <div class="form-group"><label class="form-label">Type de commerce *</label><select class="form-input" id="r-type" onchange="toggleAutreCommerce()"><option value="">Choisissez...</option><option>Restaurant</option><option>Maquis</option><option>Fast-food / Snack</option><option>Boulangerie</option><option>Boutique</option><option>Salon de coiffure</option><option>Café / Bar</option><option>Autre</option></select></div>
         </div>
         <div class="form-group" id="autre-commerce-group"><label class="form-label">Précisez votre type de commerce *</label><input class="form-input" id="r-type-autre" placeholder="Ex: Quincaillerie, Pharmacie, Couture..." type="text"></div>
-        <div class="form-row">
-          <div class="form-group"><label class="form-label">Prénom *</label><input class="form-input" id="r-prenom" placeholder="Ex: Marie" type="text"></div>
-          <div class="form-group"><label class="form-label">Nom *</label><input class="form-input" id="r-nom-p" placeholder="Ex: Kouassi" type="text"></div>
-        </div>
         <div class="form-group"><label class="form-label">Email *</label><input class="form-input" id="r-email" placeholder="votre@email.com" type="email"></div>
         <div class="form-group"><label class="form-label">Numéro WhatsApp *</label><input class="form-input" id="r-phone" placeholder="+225 07 00 00 00 00" type="tel"><div class="form-hint">Nous vous enverrons vos accès via WhatsApp</div></div>
-        <div class="form-row">
-          <div class="form-group"><label class="form-label">Plan souhaité</label><select class="form-input" id="r-plan"><option>Starter — 5 000 FCFA/mois</option><option selected>Pro — 10 000 FCFA/mois</option><option>Business — 20 000 FCFA/mois</option></select></div>
-          <div class="form-group"><label class="form-label">Nombre d'employés</label><select class="form-input" id="r-employes"><option>1 à 2</option><option>3 à 5</option><option>6 à 10</option><option>Plus de 10</option></select></div>
-        </div>
+        <div class="form-group"><label class="form-label">Plan souhaité</label><select class="form-input" id="r-plan"><option>Starter — 5 000 FCFA/mois</option><option selected>Pro — 10 000 FCFA/mois</option></select><div class="form-hint">Plan Business ? <a href="https://wa.me/2250712962296?text=Bonjour%2C%20je%20suis%20int%C3%A9ress%C3%A9%20par%20le%20plan%20Business" target="_blank" style="color:var(--blue);font-weight:600">Contactez-nous pour un devis →</a></div></div>
         <div id="r-err" class="form-err"></div>
         <button class="btn-submit" onclick="goToPaiement()">Continuer vers le paiement 💳</button>
         <div class="guarantee">🔒 Données protégées · Aucun débit pendant l'essai · Résiliable à tout moment</div>
@@ -573,11 +571,9 @@ footer{background:#0D1B40;color:rgba(255,255,255,.5);padding:40px 5%;text-align:
     const nom=document.getElementById('r-nom').value.trim();
     const typeSelect=document.getElementById('r-type').value;
     const typeAutre=document.getElementById('r-type-autre').value.trim();
-    const prenom=document.getElementById('r-prenom').value.trim();
-    const nomP=document.getElementById('r-nom-p').value.trim();
     const email=document.getElementById('r-email').value.trim();
     const phone=document.getElementById('r-phone').value.trim();
-    if(!nom||!typeSelect||!prenom||!nomP||!email||!phone){showErr('r-err','⚠️ Veuillez remplir tous les champs obligatoires.');return}
+    if(!nom||!typeSelect||!email||!phone){showErr('r-err','⚠️ Veuillez remplir tous les champs obligatoires.');return}
     if(typeSelect==='Autre'&&!typeAutre){showErr('r-err','⚠️ Veuillez préciser votre type de commerce.');return}
     if(!email.includes('@')||!email.includes('.')){showErr('r-err','⚠️ Adresse email invalide.');return}
     if(phone.replace(/\D/g,'').length<8){showErr('r-err','⚠️ Numéro WhatsApp invalide.');return}
@@ -597,12 +593,9 @@ footer{background:#0D1B40;color:rgba(255,255,255,.5);padding:40px 5%;text-align:
     const typeSelect=document.getElementById('r-type').value;
     const typeAutre=document.getElementById('r-type-autre').value.trim();
     const type=typeSelect==='Autre'?typeAutre:typeSelect;
-    const prenom=document.getElementById('r-prenom').value.trim();
-    const nomP=document.getElementById('r-nom-p').value.trim();
     const email=document.getElementById('r-email').value.trim();
     const phone=document.getElementById('r-phone').value.trim();
     const plan=document.getElementById('r-plan').value;
-    const employes=document.getElementById('r-employes').value;
     const isMomo=['orange','mtn','wave'].includes(selectedPaiement);
     let infoPaiement='';
     if(isMomo){
@@ -621,18 +614,21 @@ footer{background:#0D1B40;color:rgba(255,255,255,.5);padding:40px 5%;text-align:
     hideErr('r-err2');
     const btn=document.getElementById('btn-sub');
     btn.textContent='⏳ Envoi en cours...';btn.disabled=true;
+    // Construire le message WhatsApp AVANT l'appel Firebase (sinon bloqué sur mobile)
+    const msg=`🔔 *Nouvelle inscription Shopilot !*%0A%0A🏪 Commerce : ${nom}%0A📂 Type : ${type}%0A📧 Email : ${email}%0A📱 WhatsApp : ${phone}%0A💼 Plan : ${plan}%0A💳 Paiement : ${selectedPaiement}%0A📋 Infos : ${infoPaiement}%0A📅 Date : ${new Date().toLocaleDateString('fr-FR')}`;
+    const waUrl=`https://wa.me/2250712962296?text=${msg}`;
     try{
       const nouvelleRef=push(ref(db,'demandes'));
       await set(nouvelleRef,{
-        nom,type,prenom,nomFamille:nomP,email,phone,plan,employes,
+        nom,type,email,phone,plan,
         paiement:selectedPaiement,infosPaiement:infoPaiement,
         statut:'en_attente',
         date:new Date().toISOString().slice(0,10),ts:Date.now()
       });
-      const msg=`🔔 *Nouvelle inscription Shopilot !*%0A%0A🏪 Commerce : ${nom}%0A📂 Type : ${type}%0A👤 Contact : ${prenom} ${nomP}%0A📧 Email : ${email}%0A📱 WhatsApp : ${phone}%0A💼 Plan : ${plan}%0A💳 Paiement : ${selectedPaiement}%0A📋 Infos paiement : ${infoPaiement}%0A👥 Employés : ${employes}%0A📅 Date : ${new Date().toLocaleDateString('fr-FR')}`;
-      window.open(`https://wa.me/2250712962296?text=${msg}`,'_blank');
       document.getElementById('reg-step2').style.display='none';
       document.getElementById('reg-success').style.display='block';
+      // Ouvrir WhatsApp — fonctionne sur mobile et desktop
+      setTimeout(()=>{ window.location.href=waUrl; }, 800);
     }catch(e){
       showErr('r-err2','❌ Erreur lors de l\'envoi. Vérifiez votre connexion.');
       btn.textContent='Démarrer mon essai gratuit 🚀';btn.disabled=false;
