@@ -394,8 +394,26 @@ let previousPage = 'clients';
 function fmt(d){if(!d)return '—';const date=typeof d==='string'?new Date(d+'T12:00:00'):new Date(d);return date.toLocaleDateString('fr-FR',{day:'numeric',month:'short',year:'numeric'})}
 function today(){return new Date().toISOString().slice(0,10)}
 function genPwd(nom){const base=nom.replace(/[^a-zA-Z]/g,'').substring(0,4);return base.charAt(0).toUpperCase()+base.slice(1).toLowerCase()+Math.floor(1000+Math.random()*9000)}
-function getBadgeClass(c){if(c.abonnement?.dateFin&&c.abonnement.dateFin<today()&&c.plan!=='Fondateur')return 'badge-retard';if(c.plan==='Fondateur')return 'badge-fondateur';if(c.statut==='active')return 'badge-active';if(c.statut==='trial')return 'badge-trial';return 'badge-inactive'}
-function getBadgeText(c){if(c.abonnement?.dateFin&&c.abonnement.dateFin<today()&&c.plan!=='Fondateur')return '⚠️ En retard';if(c.plan==='Fondateur')return '🥇 Fondateur';if(c.statut==='active')return 'Actif';if(c.statut==='trial')return 'Essai';return 'Inactif'}
+
+// Récupère la date de fin peu importe où elle est stockée (abonnement.dateFin ou dateFin)
+function getDateFin(c){return c.abonnement?.dateFin || c.dateFin || null}
+
+function getBadgeClass(c){
+  const dateFin=getDateFin(c);
+  if(dateFin&&dateFin<today()&&c.plan!=='Fondateur')return 'badge-retard';
+  if(c.plan==='Fondateur')return 'badge-fondateur';
+  if(c.statut==='active')return 'badge-active';
+  if(c.statut==='trial')return 'badge-trial';
+  return 'badge-inactive';
+}
+function getBadgeText(c){
+  const dateFin=getDateFin(c);
+  if(dateFin&&dateFin<today()&&c.plan!=='Fondateur')return '⚠️ En retard';
+  if(c.plan==='Fondateur')return '🥇 Fondateur';
+  if(c.statut==='active')return 'Actif';
+  if(c.statut==='trial')return 'Essai';
+  return 'Inactif';
+}
 function getPlanBadgeClass(c){return c.plan==='Fondateur'?'plan-badge-fondateur':'plan-badge'}
 
 // ── LOGIN ──────────────────────────────────────────────
@@ -485,13 +503,13 @@ function renderDashboard(){
   const actifs=clientsData.filter(c=>c.statut==='active'||c.plan==='Fondateur').length;
   const essai=clientsData.filter(c=>c.statut==='trial'&&c.plan!=='Fondateur').length;
   const inactifs=clientsData.filter(c=>c.statut==='inactive').length;
-  const enRetard=clientsData.filter(c=>c.abonnement?.dateFin&&c.abonnement.dateFin<today()&&c.plan!=='Fondateur').length;
+  const enRetard=clientsData.filter(c=>getDateFin(c)&&getDateFin(c)<today()&&c.plan!=='Fondateur').length;
 
   // MRR réel : somme des abonnements actifs uniquement
   const mrr=clientsData.filter(c=>(c.statut==='active'||c.plan==='Fondateur')&&c.plan!=='Fondateur').reduce((s,c)=>s+(c.plan==='Starter'?5000:c.plan==='Pro'?10000:20000),0);
 
   // Taux de conversion demandes → clients (total historique estimé)
-  const totalDemandes=demandesData.length+total; // demandes en attente + ceux déjà convertis
+  const totalDemandes=demandesData.length+total;
   const tauxConversion=totalDemandes>0?Math.round((total/totalDemandes)*100):0;
 
   // Répartition par plan
@@ -504,7 +522,7 @@ function renderDashboard(){
 
   // Alertes : abonnements expirant dans 7 jours
   const dans7j=new Date(Date.now()+7*24*60*60*1000).toISOString().slice(0,10);
-  const expirentBientot=clientsData.filter(c=>c.abonnement?.dateFin&&c.abonnement.dateFin>=today()&&c.abonnement.dateFin<=dans7j&&c.plan!=='Fondateur').length;
+  const expirentBientot=clientsData.filter(c=>getDateFin(c)&&getDateFin(c)>=today()&&getDateFin(c)<=dans7j&&c.plan!=='Fondateur').length;
 
   document.getElementById('stats-row').innerHTML=`
     <div class="stat-box"><div class="stat-box-icon">🏪</div><div class="stat-box-val">${total}</div><div class="stat-box-label">Total clients</div><div class="stat-box-trend trend-up">+${nouveauxMois} ce mois</div></div>
@@ -628,7 +646,7 @@ window.ouvrirPageClient=function(id){
   `;
   // Stats
   const nbJours=Math.max(1,Math.ceil((Date.now()-(c.tsCreation||Date.now()))/(1000*60*60*24)));
-  const joursRestants=c.abonnement?.dateFin?Math.max(0,Math.ceil((new Date(c.abonnement.dateFin+'T23:59:59')-Date.now())/(1000*60*60*24))):'—';
+  const joursRestants=getDateFin(c)?Math.max(0,Math.ceil((new Date(getDateFin(c)+'T23:59:59')-Date.now())/(1000*60*60*24))):'—';
   const revMois=c.plan==='Starter'?5000:c.plan==='Pro'?10000:c.plan==='Business'?20000:0;
   document.getElementById('detail-stats-grid').innerHTML=`
     <div class="detail-stat"><div class="detail-stat-val">${nbJours}j</div><div class="detail-stat-label">Depuis l'inscription</div></div>
@@ -642,7 +660,7 @@ window.ouvrirPageClient=function(id){
     <div class="info-row"><span class="info-label">📧 Email secondaire</span><span class="info-val">${c.email2||'—'}</span></div>
     <div class="info-row"><span class="info-label">📱 WhatsApp</span><span class="info-val">${c.phone||'—'}</span></div>
     <div class="info-row"><span class="info-label">📅 Date de création</span><span class="info-val">${fmt(c.dateCreation)}</span></div>
-    <div class="info-row"><span class="info-label">📅 Fin d'abonnement</span><span class="info-val">${fmt(c.abonnement?.dateFin)}</span></div>
+    <div class="info-row"><span class="info-label">📅 Fin d'abonnement</span><span class="info-val">${fmt(getDateFin(c))}</span></div>
     <div class="info-row"><span class="info-label">🔐 MDP Serveur</span><span class="info-val"><code>${c.acces?.mdpServeur||'—'}</code></span></div>
     <div class="info-row"><span class="info-label">👑 MDP Gérant</span><span class="info-val"><code>${c.acces?.mdpGerant||'—'}</code></span></div>
     <div class="info-row"><span class="info-label">🌐 App Serveurs</span><span class="info-val"><a href="${c.acces?.lienServeur||'#'}" target="_blank">${c.acces?.lienServeur||'—'}</a></span></div>
