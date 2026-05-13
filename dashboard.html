@@ -444,34 +444,38 @@ window.logout=function(){
 window.toggleDark=function(){document.body.classList.toggle('dark');localStorage.setItem('shopilot_dark',document.body.classList.contains('dark')?'1':'0')};
 if(localStorage.getItem('shopilot_dark')==='1')document.body.classList.add('dark');
 
-let isApprouvingClient = false;
-
 // ── FIREBASE INIT ──────────────────────────────────────
-function initFirebase(){
-  demandesUnsubscribe=onValue(ref(db,'demandes'),(snapshot)=>{
+async function chargerClients(){
+  try{
+    const snapshot=await get(ref(db,'clients'));
+    const nouveau=[];
+    snapshot.forEach(child=>nouveau.push({id:child.key,...child.val()}));
+    clientsData=nouveau;
+    console.log('Clients chargés:', clientsData.length, clientsData.map(c=>c.nom));
+    updateBadge();
+    const pageClients=document.getElementById('page-clients');
+    const pageDash=document.getElementById('page-dashboard');
+    if(pageDash&&pageDash.style.display!=='none')renderDashboard();
+    if(pageClients&&pageClients.style.display!=='none')renderClients();
+  }catch(e){console.error('Erreur lecture clients:',e)}
+}
+
+async function chargerDemandes(){
+  try{
+    const snapshot=await get(ref(db,'demandes'));
     demandesData=[];
     snapshot.forEach(child=>demandesData.push({id:child.key,...child.val()}));
     updateBadge();
     if(document.getElementById('page-demandes').style.display!=='none')renderDemandes();
     if(document.getElementById('page-dashboard').style.display!=='none')renderDashboard();
-  });
-  clientsUnsubscribe=onValue(ref(db,'clients'),(snapshot)=>{
-    const nouveau=[];
-    snapshot.forEach(child=>nouveau.push({id:child.key,...child.val()}));
-    clientsData=nouveau;
-    console.log('Firebase clients chargés:', clientsData.length, clientsData.map(c=>c.nom));
-    updateBadge();
-    const pageClients=document.getElementById('page-clients');
-    const pageDash=document.getElementById('page-dashboard');
-    const pageDetail=document.getElementById('page-client-detail');
-    if(pageDash&&pageDash.style.display!=='none')renderDashboard();
-    if(pageClients&&pageClients.style.display!=='none')renderClients();
-    if(pageDetail&&pageDetail.style.display!=='none'){
-      const nomAffiché=document.getElementById('detail-nom')?.textContent;
-      const c=clientsData.find(x=>x.nom===nomAffiché);
-      if(c)ouvrirPageClient(c.id);
-    }
-  });
+  }catch(e){console.error('Erreur lecture demandes:',e)}
+}
+
+function initFirebase(){
+  chargerClients();
+  chargerDemandes();
+  onValue(ref(db,'clients'),()=>chargerClients());
+  onValue(ref(db,'demandes'),()=>chargerDemandes());
   document.getElementById('topbar-date').textContent=new Date().toLocaleDateString('fr-FR',{weekday:'long',day:'numeric',month:'long',year:'numeric'});
   showPage('dashboard');
 }
@@ -486,11 +490,10 @@ window.showPage=function(p){
   if(titles[p])document.getElementById('page-title').textContent=titles[p];
   if(p==='dashboard')renderDashboard();
   if(p==='clients'){
-    renderClients();
-    // Re-render après 800ms pour s'assurer que Firebase a chargé toutes les données
-    setTimeout(()=>renderClients(), 800);
+    chargerClients();
+    setTimeout(()=>renderClients(), 500);
   }
-  if(p==='demandes')renderDemandes();
+  if(p==='demandes'){chargerDemandes();renderDemandes();}
   if(p==='nouveau')resetForm();
 };
 
