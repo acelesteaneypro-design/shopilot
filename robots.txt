@@ -1,5 +1,5 @@
 User-agent: *
-Disallow: /shopilot-dashboard.html
+Disallow: /dashboard.html
 Disallow: /admin.html
 Allow: /
 
