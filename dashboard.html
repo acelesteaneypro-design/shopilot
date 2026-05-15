@@ -893,13 +893,14 @@ window.creerClient=async function(){
     document.getElementById('nouveau-success').style.display='block';
     // Ajouter directement dans clientsData sans relire Firebase
     clientsData.push({
-      id,nom,type,email,email2,phone,plan,statut,
-      dateCreation:today(),tsCreation:Date.now(),
-      firebaseUrl:firebaseUrl||'',
-      acces:{lienServeur:`https://shopilot.pages.dev/app/${id}/`,lienGerant:`https://shopilot.pages.dev/app/${id}/gerant`,mdpServeur:pwdS,mdpGerant:pwdG},
-      abonnement:{dateDebut:today(),dateFin}
-    });
-    renderDashboard();
+  id,nom,type,email,email2,phone,plan,statut,
+  dateCreation:today(),tsCreation:Date.now(),
+  firebaseUrl:firebaseUrl||'',
+  acces:{lienServeur:`https://shopilot.pages.dev/app/${id}/`,lienGerant:`https://shopilot.pages.dev/app/${id}/gerant`,mdpServeur:pwdS,mdpGerant:pwdG},
+  abonnement:{dateDebut:today(),dateFin}
+});
+renderDashboard();
+renderClients();
   }catch(e){
     err.textContent='❌ Erreur Firebase : '+(e.message||'Vérifiez votre connexion.');
     err.style.display='block';
