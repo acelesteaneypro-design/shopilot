@@ -359,7 +359,13 @@ body{font-family:'DM Sans',sans-serif;background:var(--off);color:var(--text);mi
         <div class="form-group"><label class="form-label">MDP serveur</label><input class="form-input" id="edit-pwd-s"></div>
         <div class="form-group"><label class="form-label">MDP gérant</label><input class="form-input" id="edit-pwd-g"></div>
       </div>
-      <div class="form-group"><label class="form-label">URL Firebase client</label><input class="form-input" id="edit-firebase-url" placeholder="https://...firebasedatabase.app" type="url"><div style="font-size:12px;color:var(--text2);margin-top:4px">Requis pour synchroniser les MDP automatiquement.</div></div>
+      <div class="form-group"><label class="form-label">🌐 Lien App Serveur</label><input class="form-input" id="edit-lien-serveur" placeholder="https://klo-allie.pages.dev/"></div>
+      <div class="form-group"><label class="form-label">👑 Lien App Gérant</label><input class="form-input" id="edit-lien-gerant" placeholder="https://klo-allie.pages.dev/gerant.html"></div>
+      <div class="form-group">
+        <label class="form-label">🔗 URL Firebase client</label>
+        <input class="form-input" id="edit-firebase-url" placeholder="https://...firebasedatabase.app" type="url">
+        <div style="font-size:12px;color:var(--text2);margin-top:4px">Requis pour synchroniser les MDP automatiquement.</div>
+      </div>
       <input type="hidden" id="edit-client-id">
       <button class="btn-confirm" onclick="sauverModifs()" style="width:100%;margin-top:16px">💾 Enregistrer</button>
       <div id="edit-err" style="color:var(--red);font-size:13px;margin-top:8px;display:none"></div>
@@ -489,7 +495,7 @@ window.showPage=function(p){
   if(p==='dashboard')renderDashboard();
   if(p==='clients'){
     chargerClients();
-    setTimeout(()=>renderClients(), 500);
+    setTimeout(()=>renderClients(), 1500);
   }
   if(p==='demandes'){chargerDemandes();renderDemandes();}
   if(p==='nouveau')resetForm();
@@ -700,7 +706,7 @@ window.ouvrirPageClient=function(id){
       <button class="qa-btn" onclick="ouvrirPlan('${id}')">🔄 Changer de plan</button>
       <button class="qa-btn" onclick="toggleStatut('${id}')">⏸ ${c.statut==='active'?'Suspendre':'Activer'}</button>
       <button class="qa-btn" onclick="envoyerWhatsApp('${id}')">💬 WhatsApp</button>
-      ${c.plan!=='Fondateur'?`<button class="qa-btn qa-btn-danger" onclick="supprimerClient('${id}')">🗑 Supprimer</button>`:''}
+      <button class="qa-btn qa-btn-danger" onclick="supprimerClient('${id}')">🗑 Supprimer</button>
     </div>
   `;
 };
@@ -761,6 +767,8 @@ window.ouvrirEdit=function(id){
   document.getElementById('edit-phone').value=c.phone||'';
   document.getElementById('edit-pwd-s').value=c.acces?.mdpServeur||'';
   document.getElementById('edit-pwd-g').value=c.acces?.mdpGerant||'';
+  document.getElementById('edit-lien-serveur').value=c.acces?.lienServeur||'';
+  document.getElementById('edit-lien-gerant').value=c.acces?.lienGerant||'';
   document.getElementById('edit-firebase-url').value=c.firebaseUrl||'';
   document.getElementById('edit-client-id').value=id;
   document.getElementById('edit-err').style.display='none';
@@ -774,21 +782,46 @@ window.sauverModifs=async function(){
   const phone=document.getElementById('edit-phone').value.trim();
   const pwdS=document.getElementById('edit-pwd-s').value.trim();
   const pwdG=document.getElementById('edit-pwd-g').value.trim();
+  const lienServeur=document.getElementById('edit-lien-serveur').value.trim();
+  const lienGerant=document.getElementById('edit-lien-gerant').value.trim();
+  const firebaseUrl=document.getElementById('edit-firebase-url').value.trim();
   if(!email){document.getElementById('edit-err').textContent='Email requis.';document.getElementById('edit-err').style.display='block';return}
+  const btn=document.querySelector('#modal-edit .btn-confirm');
+  if(btn){btn.textContent='⏳ Enregistrement...';btn.disabled=true;}
   try{
-    await update(ref(db,`clients/${id}`),{email,email2,phone,'acces/mdpServeur':pwdS,'acces/mdpGerant':pwdG});
-    // Re-sync MDP vers Firebase client si URL connue et MDP changés
-    const c=clientsData.find(x=>x.id===id);
-    if(c?.firebaseUrl&&pwdS&&pwdG){
-      const SEL='shopilot_klo_2026';
-      const syncResult=await syncMdpClientFirebase(c.firebaseUrl,pwdS,pwdG,SEL);
-      closeModal('modal-edit');
-      alert(syncResult.ok?'✅ Client mis à jour + MDP synchronisés dans Firebase client.':'✅ Client mis à jour.\n⚠️ Sync MDP échouée : '+syncResult.msg);
-    }else{
-      closeModal('modal-edit');
-      alert('✅ Client mis à jour.\n⚠️ MDP non synchronisés (URL Firebase client non renseignée).');
+    await update(ref(db,`clients/${id}`),{
+      email,email2,phone,
+      firebaseUrl:firebaseUrl||'',
+      'acces/mdpServeur':pwdS,
+      'acces/mdpGerant':pwdG,
+      'acces/lienServeur':lienServeur,
+      'acces/lienGerant':lienGerant
+    });
+    // Mettre à jour directement dans clientsData
+    const idx=clientsData.findIndex(x=>x.id===id);
+    if(idx>-1){
+      clientsData[idx]={
+        ...clientsData[idx],
+        email,email2,phone,firebaseUrl:firebaseUrl||'',
+        acces:{...clientsData[idx].acces,mdpServeur:pwdS,mdpGerant:pwdG,lienServeur,lienGerant}
+      };
     }
-  }catch(e){document.getElementById('edit-err').textContent='❌ Erreur.';document.getElementById('edit-err').style.display='block'}
+    // Sync MDP automatique si Firebase URL présente
+    let syncMsg='';
+    if(firebaseUrl&&pwdS&&pwdG){
+      if(btn)btn.textContent='⏳ Sync MDP...';
+      const SEL='shopilot_klo_2026';
+      const syncResult=await syncMdpClientFirebase(firebaseUrl,pwdS,pwdG,SEL);
+      syncMsg=syncResult.ok?' + MDP synchronisés ✅':' + ⚠️ Sync MDP échouée : '+syncResult.msg;
+    }
+    closeModal('modal-edit');
+    alert('✅ Client mis à jour'+syncMsg);
+  }catch(e){
+    document.getElementById('edit-err').textContent='❌ Erreur : '+e.message;
+    document.getElementById('edit-err').style.display='block';
+  }finally{
+    if(btn){btn.textContent='💾 Enregistrer';btn.disabled=false;}
+  }
 };
 
 // ── SHA-256 natif navigateur ───────────────────────────
@@ -858,8 +891,15 @@ window.creerClient=async function(){
     document.getElementById('nouveau-form').style.display='none';
     document.getElementById('success-info').innerHTML=`<strong>Commerce :</strong> ${nom}<br><strong>Plan :</strong> ${plan}<br><br>🔗 <strong>Lien serveur :</strong> shopilot.pages.dev/app/${id}/<br>🔐 <strong>MDP serveur :</strong> ${pwdS}<br>👑 <strong>MDP gérant :</strong> ${pwdG}${syncMsg}<br><br><em style="font-size:12px">Envoyez ces informations au client via WhatsApp</em>`;
     document.getElementById('nouveau-success').style.display='block';
-    // Recharger les clients après création
-    await chargerClients();
+    // Ajouter directement dans clientsData sans relire Firebase
+    clientsData.push({
+      id,nom,type,email,email2,phone,plan,statut,
+      dateCreation:today(),tsCreation:Date.now(),
+      firebaseUrl:firebaseUrl||'',
+      acces:{lienServeur:`https://shopilot.pages.dev/app/${id}/`,lienGerant:`https://shopilot.pages.dev/app/${id}/gerant`,mdpServeur:pwdS,mdpGerant:pwdG},
+      abonnement:{dateDebut:today(),dateFin}
+    });
+    renderDashboard();
   }catch(e){
     err.textContent='❌ Erreur Firebase : '+(e.message||'Vérifiez votre connexion.');
     err.style.display='block';
@@ -898,13 +938,20 @@ window.approuver=async function(id){
       abonnement:{dateDebut:today(),dateFin}
     });
     await remove(ref(db,`demandes/${id}`));
-    // Remettre le filtre sur "Tous" pour être sûr de tout voir
+    // Ajouter directement dans clientsData
+    clientsData.push({
+      id:clientId,nom:dem.nom,type:dem.type||'—',email:dem.email,phone:dem.phone,
+      plan,statut,dateCreation:today(),tsCreation:Date.now(),
+      acces:{lienServeur:`https://shopilot.pages.dev/app/${clientId}/`,lienGerant:`https://shopilot.pages.dev/app/${clientId}/gerant`,mdpServeur:pwdS,mdpGerant:pwdG},
+      abonnement:{dateDebut:today(),dateFin}
+    });
+    // Retirer la demande de demandesData
+    demandesData=demandesData.filter(x=>x.id!==id);
+    updateBadge();
     currentFilter='all';
     document.querySelectorAll('#filter-row .filter-btn').forEach(b=>b.classList.remove('active'));
     const allBtn=document.querySelector('#filter-row .filter-btn');
     if(allBtn)allBtn.classList.add('active');
-    await chargerClients();
-    await chargerDemandes();
     showPage('clients');
     alert(`✅ ${dem.nom} approuvé !\n\nMDP Serveur : ${pwdS}\nMDP Gérant : ${pwdG}`);
   }catch(e){alert('❌ Erreur : '+e.message)}
@@ -914,19 +961,26 @@ window.rejeter=async function(id){if(!confirm('Rejeter cette demande ?'))return;
 
 window.toggleStatut=async function(id){
   const c=clientsData.find(x=>x.id===id);if(!c)return;
-  if(c.plan==='Fondateur'){alert('Le client Fondateur ne peut pas être suspendu.');return}
-  try{await update(ref(db,`clients/${id}`),{statut:c.statut==='active'?'inactive':'active'})}catch(e){}
+  try{
+    const newStatut=c.statut==='active'?'inactive':'active';
+    await update(ref(db,`clients/${id}`),{statut:newStatut});
+    const idx=clientsData.findIndex(x=>x.id===id);
+    if(idx>-1)clientsData[idx].statut=newStatut;
+    renderClients();
+  }catch(e){alert('❌ Erreur : '+e.message)}
 };
 
 window.supprimerClient=async function(id){
   const c=clientsData.find(x=>x.id===id);if(!c)return;
-  if(c.plan==='Fondateur'){alert('Le client Fondateur ne peut pas être supprimé.');return}
-  if(!confirm('Supprimer ce client définitivement ?'))return;
+  const msg=c.plan==='Fondateur'
+    ?`⚠️ ATTENTION : ${c.nom} est un client Fondateur.\n\nÊtes-vous absolument sûr de vouloir le supprimer définitivement ?`
+    :`Supprimer ${c.nom} définitivement ?`;
+  if(!confirm(msg))return;
   try{
     await remove(ref(db,`clients/${id}`));
-    await chargerClients();
+    clientsData=clientsData.filter(x=>x.id!==id);
     showPage('clients');
-  }catch(e){}
+  }catch(e){alert('❌ Erreur suppression : '+e.message)}
 };
 
 window.copierAcces=function(id){
