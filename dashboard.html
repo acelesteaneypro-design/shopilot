@@ -869,7 +869,7 @@ window.creerClient=async function(){
   if(!email.includes('@')){err.textContent='⚠️ Email invalide';err.style.display='block';return}
   err.style.display='none';
   btn.textContent='⏳ Création en cours...';btn.disabled=true;
-  const id=nom.toLowerCase().replace(/\s+/g,'-').replace(/[^a-z0-9-]/g,'').substring(0,20)+'-'+Date.now();
+  const id=nom.toLowerCase().replace(/\s+/g,'-').replace(/[^a-z0-9-]/g,'').substring(0,20)+'-'+crypto.randomUUID();  
   const statut=plan==='Fondateur'?'active':'trial';
   const dateFin=plan==='Fondateur'?'2099-12-31':new Date(Date.now()+14*24*60*60*1000).toISOString().slice(0,10);
   // Sel de sécurité — doit correspondre à celui dans index.html/gerant.html du client
@@ -923,7 +923,7 @@ window.toggleAutreType=function(){document.getElementById('autre-type-group').st
 window.approuver=async function(id){
   const dem=demandesData.find(x=>x.id===id);if(!dem)return;
   const pwdS=genPwd(dem.nom);const pwdG='Gerant'+genPwd(dem.nom).slice(-4);
-  const clientId=dem.nom.toLowerCase().replace(/\s+/g,'-').replace(/[^a-z0-9-]/g,'').substring(0,20)+'-'+Date.now().toString().slice(-4);
+  const clientId=dem.nom.toLowerCase().replace(/\s+/g,'-').replace(/[^a-z0-9-]/g,'').substring(0,20)+'-'+crypto.randomUUID();
   const plan=(dem.plan||'Pro').replace(/ —.*$/,'');
   const statut=plan==='Fondateur'?'active':'trial';
   const dateFin=plan==='Fondateur'?'2099-12-31':new Date(Date.now()+14*24*60*60*1000).toISOString().slice(0,10);
