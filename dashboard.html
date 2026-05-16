@@ -247,7 +247,7 @@ body{font-family:'DM Sans',sans-serif;background:var(--off);color:var(--text);mi
         <button class="filter-btn" onclick="filterClients('Starter',this)">🚀 Starter</button>
       </div>
       <div class="card">
-        <div class="card-header"><div class="card-title">Tous les clients</div><div style="display:flex;gap:8px"><button class="btn-add" onclick="exportCSV()">📥 Export CSV</button><button class="btn-add" onclick="showPage('nouveau')">+ Ajouter</button></div></div>
+        <div class="card-header"><div class="card-title">Tous les clients</div><div style="display:flex;gap:8px"><button class="btn-add" onclick="rafraichirClients()" style="background:var(--white);color:var(--blue);border:1.5px solid var(--blue)">🔄 Rafraîchir</button><button class="btn-add" onclick="exportCSV()">📥 Export CSV</button><button class="btn-add" onclick="showPage('nouveau')">+ Ajouter</button></div></div>
         <table class="table" id="clients-table"></table>
       </div>
     </div>
@@ -493,10 +493,7 @@ window.showPage=function(p){
   const titles={dashboard:'Dashboard',clients:'Clients',demandes:'Demandes',nouveau:'Nouveau client'};
   if(titles[p])document.getElementById('page-title').textContent=titles[p];
   if(p==='dashboard')renderDashboard();
-  if(p==='clients'){
-    chargerClients();
-    setTimeout(()=>renderClients(), 1500);
-  }
+  if(p==='clients')renderClients();
   if(p==='demandes'){chargerDemandes();renderDemandes();}
   if(p==='nouveau')resetForm();
 };
@@ -612,6 +609,13 @@ window.filterClients=function(f,btn){
   document.querySelectorAll('#filter-row .filter-btn').forEach(b=>b.classList.remove('active'));
   if(btn)btn.classList.add('active');
   renderClients();
+};
+
+window.rafraichirClients=async function(){
+  const btn=document.querySelector('[onclick="rafraichirClients()"]');
+  if(btn){btn.textContent='⏳ Chargement...';btn.disabled=true;}
+  await chargerClients();
+  if(btn){btn.textContent='🔄 Rafraîchir';btn.disabled=false;}
 };
 
 function renderClients(){
@@ -954,6 +958,7 @@ window.approuver=async function(id){
     const allBtn=document.querySelector('#filter-row .filter-btn');
     if(allBtn)allBtn.classList.add('active');
     showPage('clients');
+    renderClients();
     alert(`✅ ${dem.nom} approuvé !\n\nMDP Serveur : ${pwdS}\nMDP Gérant : ${pwdG}`);
   }catch(e){alert('❌ Erreur : '+e.message)}
 };
