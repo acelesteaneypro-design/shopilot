@@ -156,13 +156,21 @@ footer{background:#0D1B40;color:rgba(255,255,255,.5);padding:40px 5%;text-align:
 #autre-commerce-group{display:none}
 .paiement-step{display:none}
 .paiement-step.active{display:block}
-.paiement-options{display:flex;gap:12px;flex-wrap:wrap;margin-bottom:16px}
-.paiement-option{flex:1;min-width:80px;padding:16px 12px;border:2px solid var(--border);border-radius:14px;text-align:center;cursor:pointer;transition:all .2s;background:var(--white)}
-.paiement-option:hover{border-color:var(--blue)}
-.paiement-option.selected{border-color:var(--blue);background:var(--blue-xl)}
-.paiement-option-icon{font-size:28px;margin-bottom:6px}
-.paiement-option-name{font-size:12px;font-weight:600;color:var(--text)}
-.paiement-section-title{font-size:13px;font-weight:700;color:var(--text2);text-transform:uppercase;letter-spacing:1px;margin:16px 0 8px}
+.paiement-cats{display:flex;gap:10px;margin-bottom:20px}
+.paiement-cat{flex:1;padding:14px 8px;border:2px solid var(--border);border-radius:16px;text-align:center;cursor:pointer;transition:all .25s;background:var(--white);user-select:none}
+.paiement-cat:hover{border-color:var(--blue);box-shadow:0 2px 12px rgba(27,79,216,.08)}
+.paiement-cat.active{border-color:var(--blue);background:var(--blue-xl)}
+.paiement-cat-icon{height:36px;display:flex;align-items:center;justify-content:center;margin-bottom:6px}
+.paiement-cat-label{font-size:12px;font-weight:700;color:var(--text);letter-spacing:.3px}
+.paiement-panel{display:none;animation:fadeUp .2s ease}
+.paiement-panel.active{display:block}
+@keyframes fadeUp{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
+.paiement-providers{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:16px}
+.paiement-provider{flex:1;min-width:72px;padding:12px 8px;border:2px solid var(--border);border-radius:12px;text-align:center;cursor:pointer;transition:all .2s;background:var(--white)}
+.paiement-provider:hover{border-color:var(--blue)}
+.paiement-provider.selected{border-color:var(--blue);background:var(--blue-xl)}
+.paiement-provider img{height:28px;object-fit:contain;display:block;margin:0 auto 5px}
+.paiement-provider-name{font-size:11px;font-weight:600;color:var(--text2)}
 .paiement-divider{display:flex;align-items:center;gap:12px;margin:16px 0}
 .paiement-divider::before,.paiement-divider::after{content:'';flex:1;height:1px;background:var(--border)}
 .paiement-divider span{font-size:12px;color:var(--text2);font-weight:500}
@@ -630,27 +638,108 @@ footer{background:#0D1B40;color:rgba(255,255,255,.5);padding:40px 5%;text-align:
 
       <div id="reg-step2" class="paiement-step">
         <button class="btn-back" onclick="goToStep1()">← Retour</button>
-        <p style="font-weight:600;margin-bottom:4px;color:var(--text)">Choisissez votre mode de paiement</p>
-        <p style="font-size:13px;color:var(--text2);margin-bottom:16px">Votre moyen de paiement ne sera pas débité pendant les 14 jours d'essai.</p>
+        <p style="font-weight:700;font-size:17px;margin-bottom:4px;color:var(--text)">Mode de paiement</p>
+        <p style="font-size:13px;color:var(--text2);margin-bottom:20px">Aucun débit pendant les 14 jours d'essai.</p>
 
-        <div class="paiement-section-title">📱 Mobile Money</div>
-        <div class="paiement-options">
-          <div class="paiement-option selected" onclick="selectPaiement(this,'orange')"><div class="paiement-option-icon">🟠</div><div class="paiement-option-name">Orange Money</div></div>
-          <div class="paiement-option" onclick="selectPaiement(this,'mtn')"><div class="paiement-option-icon">🟡</div><div class="paiement-option-name">MTN MoMo</div></div>
-          <div class="paiement-option" onclick="selectPaiement(this,'wave')"><div class="paiement-option-icon">🌊</div><div class="paiement-option-name">Wave</div></div>
+        <!-- 3 catégories -->
+        <div class="paiement-cats">
+          <div class="paiement-cat active" onclick="selectCat('momo',this)">
+            <div class="paiement-cat-icon">
+              <svg width="30" height="24" viewBox="0 0 30 24" fill="none"><rect width="30" height="24" rx="6" fill="#F0FFF4"/><rect x="4" y="6" width="22" height="12" rx="3" fill="#00A651" opacity=".2"/><path d="M9 12l3 3 9-6" stroke="#00A651" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            </div>
+            <div class="paiement-cat-label">Mobile Money</div>
+          </div>
+          <div class="paiement-cat" onclick="selectCat('carte',this)">
+            <div class="paiement-cat-icon">
+              <svg width="34" height="24" viewBox="0 0 34 24" fill="none"><rect width="34" height="24" rx="5" fill="#F5F7FF"/><rect y="6" width="34" height="5" fill="#1B4FD8" opacity=".2"/><rect x="3" y="15" width="9" height="2.5" rx="1.25" fill="#1B4FD8" opacity=".35"/><circle cx="24" cy="16" r="4" fill="#EB001B" opacity=".75"/><circle cx="28" cy="16" r="4" fill="#F79E1B" opacity=".75"/></svg>
+            </div>
+            <div class="paiement-cat-label">Carte bancaire</div>
+          </div>
+          <div class="paiement-cat" onclick="selectCat('paypal',this)">
+            <div class="paiement-cat-icon">
+              <svg width="30" height="24" viewBox="0 0 30 24" fill="none"><rect width="30" height="24" rx="6" fill="#EEF4FF"/><path d="M20 7h-7.5C11.7 7 11 7.6 10.8 8.4L9 18h3.5l.6-3.5H16c3 0 5.5-2 6-5 .3-1.8-.8-3.2-2-3.5z" fill="#003087"/><path d="M12 11.5l-.6 3.5H13c2 0 3.5-1.2 3.8-3 .2-1.2-.5-2.2-1.8-2.2l-3 .5-.4 1.2z" fill="#009CDE"/></svg>
+            </div>
+            <div class="paiement-cat-label">PayPal</div>
+          </div>
         </div>
 
-        <div class="paiement-divider"><span>ou paiement international</span></div>
-
-        <div class="paiement-section-title">💳 Carte & PayPal</div>
-        <div class="paiement-options">
-          <div class="paiement-option" onclick="selectPaiement(this,'carte')"><div class="paiement-option-icon">💳</div><div class="paiement-option-name">Carte bancaire</div></div>
-          <div class="paiement-option" onclick="selectPaiement(this,'paypal')"><div class="paiement-option-icon">🅿️</div><div class="paiement-option-name">PayPal</div></div>
+        <!-- Panel Mobile Money -->
+        <div id="panel-momo" class="paiement-panel active">
+          <p style="font-size:13px;color:var(--text2);margin-bottom:12px">Sélectionnez votre opérateur :</p>
+          <div class="paiement-providers">
+            <div class="paiement-provider selected" onclick="selectProvider(this,'orange')">
+              <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/1/1b/Orange_logo.svg/120px-Orange_logo.svg.png" alt="Orange">
+              <div class="paiement-provider-name">Orange Money</div>
+            </div>
+            <div class="paiement-provider" onclick="selectProvider(this,'mtn')">
+              <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/9/93/New-mtn-logo.jpg/120px-New-mtn-logo.jpg" alt="MTN">
+              <div class="paiement-provider-name">MTN MoMo</div>
+            </div>
+            <div class="paiement-provider" onclick="selectProvider(this,'moov')">
+              <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/8/85/Moov_Africa_logo.svg/120px-Moov_Africa_logo.svg.png" alt="Moov">
+              <div class="paiement-provider-name">Moov Money</div>
+            </div>
+            <div class="paiement-provider" onclick="selectProvider(this,'wave')">
+              <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/3/3b/Wave_mobile_money_logo.svg/120px-Wave_mobile_money_logo.svg.png" alt="Wave">
+              <div class="paiement-provider-name">Wave</div>
+            </div>
+          </div>
+          <div class="form-group" style="margin-top:4px">
+            <label class="form-label">Numéro Mobile Money *</label>
+            <div class="phone-input-wrap">
+              <div class="phone-indicatif-wrap" onclick="document.getElementById('r-ind-momo').focus();document.getElementById('r-ind-momo').click()">
+                <div class="phone-indicatif-display" id="r-ind-momo-display">🇨🇮 +225</div>
+                <select class="phone-indicatif-hidden" id="r-ind-momo" onchange="document.getElementById('r-ind-momo-display').textContent=this.options[this.selectedIndex].text">
+                  <option value="+225" selected>🇨🇮 +225</option>
+                  <option value="+221">🇸🇳 +221</option>
+                  <option value="+223">🇲🇱 +223</option>
+                  <option value="+226">🇧🇫 +226</option>
+                  <option value="+228">🇹🇬 +228</option>
+                  <option value="+229">🇧🇯 +229</option>
+                  <option value="+224">🇬🇳 +224</option>
+                  <option value="+227">🇳🇪 +227</option>
+                  <option value="+234">🇳🇬 +234</option>
+                  <option value="+233">🇬🇭 +233</option>
+                </select>
+              </div>
+              <input class="phone-number" id="r-momo" placeholder="07 00 00 00 00" type="tel">
+            </div>
+          </div>
         </div>
 
-        <div id="momo-group" class="form-group"><label class="form-label">Numéro mobile money *</label><input class="form-input" id="r-momo" placeholder="+225 07 00 00 00 00" type="tel"></div>
-        <div id="carte-group" class="form-group" style="display:none"><label class="form-label">Email de facturation *</label><input class="form-input" id="r-email-facturation" placeholder="votre@email.com" type="email"><div class="form-hint">Vous recevrez un lien de paiement sécurisé par email</div></div>
-        <div id="paypal-group" class="form-group" style="display:none"><label class="form-label">Email PayPal *</label><input class="form-input" id="r-email-paypal" placeholder="votre@paypal.com" type="email"><div class="form-hint">Vous recevrez une demande de paiement PayPal</div></div>
+        <!-- Panel Carte -->
+        <div id="panel-carte" class="paiement-panel">
+          <div class="paiement-providers" style="margin-bottom:16px">
+            <div class="paiement-provider selected" style="pointer-events:none">
+              <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/5/5e/Visa_Inc._logo.svg/120px-Visa_Inc._logo.svg.png" alt="Visa">
+              <div class="paiement-provider-name">Visa</div>
+            </div>
+            <div class="paiement-provider selected" style="pointer-events:none">
+              <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/2/2a/Mastercard-logo.svg/120px-Mastercard-logo.svg.png" alt="Mastercard">
+              <div class="paiement-provider-name">Mastercard</div>
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Email de facturation *</label>
+            <input class="form-input" id="r-email-facturation" placeholder="votre@email.com" type="email">
+            <div class="form-hint">Vous recevrez un lien de paiement sécurisé par email</div>
+          </div>
+        </div>
+
+        <!-- Panel PayPal -->
+        <div id="panel-paypal" class="paiement-panel">
+          <div class="paiement-providers" style="margin-bottom:16px">
+            <div class="paiement-provider selected" style="pointer-events:none;max-width:120px">
+              <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/b/b5/PayPal.svg/120px-PayPal.svg.png" alt="PayPal">
+              <div class="paiement-provider-name">PayPal</div>
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Email PayPal *</label>
+            <input class="form-input" id="r-email-paypal" placeholder="votre@paypal.com" type="email">
+            <div class="form-hint">Vous recevrez une demande de paiement PayPal</div>
+          </div>
+        </div>
 
         <div id="r-err2" class="form-err"></div>
         <button class="btn-submit" id="btn-sub" onclick="soumettre()">Démarrer mon essai gratuit 🚀</button>
@@ -769,14 +858,22 @@ footer{background:#0D1B40;color:rgba(255,255,255,.5);padding:40px 5%;text-align:
     document.querySelectorAll('#contact-form-box .form-group, #contact-form-box p, #btn-contact').forEach(el=>el.style.display='none');
   };
 
-  let selectedPaiement='orange';
-  window.selectPaiement=function(el,type){
-    document.querySelectorAll('.paiement-option').forEach(o=>o.classList.remove('selected'));
-    el.classList.add('selected');selectedPaiement=type;
-    const isMomo=['orange','mtn','wave'].includes(type);
-    document.getElementById('momo-group').style.display=isMomo?'block':'none';
-    document.getElementById('carte-group').style.display=type==='carte'?'block':'none';
-    document.getElementById('paypal-group').style.display=type==='paypal'?'block':'none';
+  let selectedCat='momo';
+  let selectedProvider='orange';
+
+  window.selectCat=function(cat,el){
+    document.querySelectorAll('.paiement-cat').forEach(c=>c.classList.remove('active'));
+    el.classList.add('active');
+    selectedCat=cat;
+    ['momo','carte','paypal'].forEach(p=>{
+      document.getElementById('panel-'+p).classList.toggle('active',p===cat);
+    });
+  };
+
+  window.selectProvider=function(el,provider){
+    el.closest('.paiement-providers').querySelectorAll('.paiement-provider').forEach(p=>p.classList.remove('selected'));
+    el.classList.add('selected');
+    selectedProvider=provider;
   };
 
   window.goToPaiement=function(){
@@ -812,17 +909,18 @@ footer{background:#0D1B40;color:rgba(255,255,255,.5);padding:40px 5%;text-align:
     const phoneRaw=document.getElementById('r-phone').value.trim();
     const phone=indicatif+' '+phoneRaw;
     const plan=document.getElementById('r-plan').value;
-    const isMomo=['orange','mtn','wave'].includes(selectedPaiement);
+    const isMomo=selectedCat==='momo';
     let infoPaiement='';
     if(isMomo){
-      const momo=document.getElementById('r-momo').value.trim();
-      if(!momo||momo.replace(/\D/g,'').length<8){showErr('r-err2','⚠️ Numéro mobile money invalide.');return}
-      infoPaiement=momo;
-    } else if(selectedPaiement==='carte'){
+      const indMomo=document.getElementById('r-ind-momo').value;
+      const momoRaw=document.getElementById('r-momo').value.trim();
+      if(!momoRaw||momoRaw.replace(/\D/g,'').length<6){showErr('r-err2','⚠️ Numéro mobile money invalide.');return}
+      infoPaiement=indMomo+' '+momoRaw;
+    } else if(selectedCat==='carte'){
       const ef=document.getElementById('r-email-facturation').value.trim();
       if(!ef||!ef.includes('@')){showErr('r-err2','⚠️ Email de facturation invalide.');return}
       infoPaiement=ef;
-    } else if(selectedPaiement==='paypal'){
+    } else if(selectedCat==='paypal'){
       const ep=document.getElementById('r-email-paypal').value.trim();
       if(!ep||!ep.includes('@')){showErr('r-err2','⚠️ Email PayPal invalide.');return}
       infoPaiement=ep;
@@ -831,13 +929,14 @@ footer{background:#0D1B40;color:rgba(255,255,255,.5);padding:40px 5%;text-align:
     const btn=document.getElementById('btn-sub');
     btn.textContent='⏳ Envoi en cours...';btn.disabled=true;
     // Construire le message WhatsApp AVANT l'appel Firebase (sinon bloqué sur mobile)
-    const msg=`🔔 *Nouvelle inscription Shopilot !*%0A%0A🏪 Commerce : ${nom}%0A📂 Type : ${type}%0A📧 Email : ${email}%0A📱 WhatsApp : ${phone}%0A💼 Plan : ${plan}%0A💳 Paiement : ${selectedPaiement}%0A📋 Infos : ${infoPaiement}%0A📅 Date : ${new Date().toLocaleDateString('fr-FR')}`;
+    const modePaiementLabel=selectedCat==='momo'?`Mobile Money - ${selectedProvider}`:selectedCat==='carte'?'Carte bancaire':'PayPal';
+    const msg=`🔔 *Nouvelle inscription Shopilot !*%0A%0A🏪 Commerce : ${nom}%0A📂 Type : ${type}%0A📧 Email : ${email}%0A📱 WhatsApp : ${phone}%0A💼 Plan : ${plan}%0A💳 Paiement : ${modePaiementLabel}%0A📋 Infos : ${infoPaiement}%0A📅 Date : ${new Date().toLocaleDateString('fr-FR')}`;
     const waUrl=`https://wa.me/2250712962296?text=${msg}`;
     try{
       const nouvelleRef=push(ref(db,'demandes'));
       await set(nouvelleRef,{
         nom,type,email,phone,plan,
-        paiement:selectedPaiement,infosPaiement:infoPaiement,
+        paiement:modePaiementLabel,infosPaiement:infoPaiement,
         statut:'en_attente',
         date:new Date().toISOString().slice(0,10),ts:Date.now()
       });
