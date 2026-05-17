@@ -156,20 +156,25 @@ footer{background:#0D1B40;color:rgba(255,255,255,.5);padding:40px 5%;text-align:
 #autre-commerce-group{display:none}
 .paiement-step{display:none}
 .paiement-step.active{display:block}
-.paiement-cats{display:flex;gap:10px;margin-bottom:20px}
-.paiement-cat{flex:1;padding:14px 8px;border:2px solid var(--border);border-radius:16px;text-align:center;cursor:pointer;transition:all .25s;background:var(--white);user-select:none}
-.paiement-cat:hover{border-color:var(--blue);box-shadow:0 2px 12px rgba(27,79,216,.08)}
-.paiement-cat.active{border-color:var(--blue);background:var(--blue-xl)}
-.paiement-cat-icon{height:36px;display:flex;align-items:center;justify-content:center;margin-bottom:6px}
-.paiement-cat-label{font-size:12px;font-weight:700;color:var(--text);letter-spacing:.3px}
-.paiement-panel{display:none;animation:fadeUp .2s ease}
-.paiement-panel.active{display:block}
-@keyframes fadeUp{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
+.paiement-cats{display:flex;flex-direction:column;gap:10px;margin-bottom:8px}
+.paiement-cat{border:2px solid var(--border);border-radius:16px;background:var(--white);overflow:hidden;transition:border-color .25s}
+.paiement-cat.active{border-color:var(--blue)}
+.paiement-cat-header{display:flex;align-items:center;gap:14px;padding:14px 16px;cursor:pointer;user-select:none}
+.paiement-cat-icon{width:40px;height:40px;border-radius:10px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.paiement-cat-icon.momo{background:#F0FFF4}
+.paiement-cat-icon.carte{background:#F5F7FF}
+.paiement-cat-icon.paypal{background:#EEF4FF}
+.paiement-cat-label{font-size:15px;font-weight:700;color:var(--text);flex:1}
+.paiement-cat-chevron{font-size:11px;color:var(--text2);transition:transform .25s}
+.paiement-cat.active .paiement-cat-chevron{transform:rotate(180deg)}
+.paiement-panel{display:none;padding:0 16px 16px}
+.paiement-panel.active{display:block;animation:fadeUp .2s ease}
+@keyframes fadeUp{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:translateY(0)}}
 .paiement-providers{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:16px}
-.paiement-provider{flex:1;min-width:72px;padding:12px 8px;border:2px solid var(--border);border-radius:12px;text-align:center;cursor:pointer;transition:all .2s;background:var(--white)}
+.paiement-provider{flex:1;min-width:68px;padding:10px 6px;border:2px solid var(--border);border-radius:12px;text-align:center;cursor:pointer;transition:all .2s;background:var(--white)}
 .paiement-provider:hover{border-color:var(--blue)}
 .paiement-provider.selected{border-color:var(--blue);background:var(--blue-xl)}
-.paiement-provider img{height:28px;object-fit:contain;display:block;margin:0 auto 5px}
+.paiement-provider svg,.paiement-provider img{display:block;margin:0 auto 5px;height:26px;width:auto}
 .paiement-provider-name{font-size:11px;font-weight:600;color:var(--text2)}
 .paiement-divider{display:flex;align-items:center;gap:12px;margin:16px 0}
 .paiement-divider::before,.paiement-divider::after{content:'';flex:1;height:1px;background:var(--border)}
@@ -639,106 +644,119 @@ footer{background:#0D1B40;color:rgba(255,255,255,.5);padding:40px 5%;text-align:
       <div id="reg-step2" class="paiement-step">
         <button class="btn-back" onclick="goToStep1()">← Retour</button>
         <p style="font-weight:700;font-size:17px;margin-bottom:4px;color:var(--text)">Mode de paiement</p>
-        <p style="font-size:13px;color:var(--text2);margin-bottom:20px">Aucun débit pendant les 14 jours d'essai.</p>
+        <p style="font-size:13px;color:var(--text2);margin-bottom:18px">Aucun débit pendant les 14 jours d'essai.</p>
 
-        <!-- 3 catégories -->
         <div class="paiement-cats">
-          <div class="paiement-cat active" onclick="selectCat('momo',this)">
-            <div class="paiement-cat-icon">
-              <svg width="30" height="24" viewBox="0 0 30 24" fill="none"><rect width="30" height="24" rx="6" fill="#F0FFF4"/><rect x="4" y="6" width="22" height="12" rx="3" fill="#00A651" opacity=".2"/><path d="M9 12l3 3 9-6" stroke="#00A651" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
-            </div>
-            <div class="paiement-cat-label">Mobile Money</div>
-          </div>
-          <div class="paiement-cat" onclick="selectCat('carte',this)">
-            <div class="paiement-cat-icon">
-              <svg width="34" height="24" viewBox="0 0 34 24" fill="none"><rect width="34" height="24" rx="5" fill="#F5F7FF"/><rect y="6" width="34" height="5" fill="#1B4FD8" opacity=".2"/><rect x="3" y="15" width="9" height="2.5" rx="1.25" fill="#1B4FD8" opacity=".35"/><circle cx="24" cy="16" r="4" fill="#EB001B" opacity=".75"/><circle cx="28" cy="16" r="4" fill="#F79E1B" opacity=".75"/></svg>
-            </div>
-            <div class="paiement-cat-label">Carte bancaire</div>
-          </div>
-          <div class="paiement-cat" onclick="selectCat('paypal',this)">
-            <div class="paiement-cat-icon">
-              <svg width="30" height="24" viewBox="0 0 30 24" fill="none"><rect width="30" height="24" rx="6" fill="#EEF4FF"/><path d="M20 7h-7.5C11.7 7 11 7.6 10.8 8.4L9 18h3.5l.6-3.5H16c3 0 5.5-2 6-5 .3-1.8-.8-3.2-2-3.5z" fill="#003087"/><path d="M12 11.5l-.6 3.5H13c2 0 3.5-1.2 3.8-3 .2-1.2-.5-2.2-1.8-2.2l-3 .5-.4 1.2z" fill="#009CDE"/></svg>
-            </div>
-            <div class="paiement-cat-label">PayPal</div>
-          </div>
-        </div>
 
-        <!-- Panel Mobile Money -->
-        <div id="panel-momo" class="paiement-panel active">
-          <p style="font-size:13px;color:var(--text2);margin-bottom:12px">Sélectionnez votre opérateur :</p>
-          <div class="paiement-providers">
-            <div class="paiement-provider selected" onclick="selectProvider(this,'orange')">
-              <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/1/1b/Orange_logo.svg/120px-Orange_logo.svg.png" alt="Orange">
-              <div class="paiement-provider-name">Orange Money</div>
-            </div>
-            <div class="paiement-provider" onclick="selectProvider(this,'mtn')">
-              <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/9/93/New-mtn-logo.jpg/120px-New-mtn-logo.jpg" alt="MTN">
-              <div class="paiement-provider-name">MTN MoMo</div>
-            </div>
-            <div class="paiement-provider" onclick="selectProvider(this,'moov')">
-              <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/8/85/Moov_Africa_logo.svg/120px-Moov_Africa_logo.svg.png" alt="Moov">
-              <div class="paiement-provider-name">Moov Money</div>
-            </div>
-            <div class="paiement-provider" onclick="selectProvider(this,'wave')">
-              <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/3/3b/Wave_mobile_money_logo.svg/120px-Wave_mobile_money_logo.svg.png" alt="Wave">
-              <div class="paiement-provider-name">Wave</div>
-            </div>
-          </div>
-          <div class="form-group" style="margin-top:4px">
-            <label class="form-label">Numéro Mobile Money *</label>
-            <div class="phone-input-wrap">
-              <div class="phone-indicatif-wrap" onclick="document.getElementById('r-ind-momo').focus();document.getElementById('r-ind-momo').click()">
-                <div class="phone-indicatif-display" id="r-ind-momo-display">🇨🇮 +225</div>
-                <select class="phone-indicatif-hidden" id="r-ind-momo" onchange="document.getElementById('r-ind-momo-display').textContent=this.options[this.selectedIndex].text">
-                  <option value="+225" selected>🇨🇮 +225</option>
-                  <option value="+221">🇸🇳 +221</option>
-                  <option value="+223">🇲🇱 +223</option>
-                  <option value="+226">🇧🇫 +226</option>
-                  <option value="+228">🇹🇬 +228</option>
-                  <option value="+229">🇧🇯 +229</option>
-                  <option value="+224">🇬🇳 +224</option>
-                  <option value="+227">🇳🇪 +227</option>
-                  <option value="+234">🇳🇬 +234</option>
-                  <option value="+233">🇬🇭 +233</option>
-                </select>
+          <!-- Mobile Money -->
+          <div class="paiement-cat active" id="cat-momo">
+            <div class="paiement-cat-header" onclick="selectCat('momo')">
+              <div class="paiement-cat-icon momo">
+                <svg width="22" height="22" viewBox="0 0 22 22" fill="none"><rect x="5" y="1" width="12" height="20" rx="3" fill="#00A651" opacity=".15" stroke="#00A651" stroke-width="1.5"/><rect x="8" y="17" width="6" height="1.5" rx=".75" fill="#00A651"/><circle cx="11" cy="4.5" r="1" fill="#00A651"/><rect x="7" y="7" width="8" height="1.2" rx=".6" fill="#00A651" opacity=".5"/><rect x="7" y="10" width="5" height="1.2" rx=".6" fill="#00A651" opacity=".5"/></svg>
               </div>
-              <input class="phone-number" id="r-momo" placeholder="07 00 00 00 00" type="tel">
+              <span class="paiement-cat-label">Mobile Money</span>
+              <span class="paiement-cat-chevron">▼</span>
+            </div>
+            <div id="panel-momo" class="paiement-panel active">
+              <p style="font-size:13px;color:var(--text2);margin-bottom:12px">Sélectionnez votre opérateur :</p>
+              <div class="paiement-providers">
+                <!-- Orange Money -->
+                <div class="paiement-provider selected" onclick="selectProvider(this,'orange')">
+                  <svg height="26" viewBox="0 0 80 26" fill="none" xmlns="http://www.w3.org/2000/svg"><rect width="80" height="26" rx="4" fill="#FF6600"/><text x="40" y="18" font-family="Arial" font-weight="bold" font-size="13" fill="white" text-anchor="middle">orange</text></svg>
+                  <div class="paiement-provider-name">Orange Money</div>
+                </div>
+                <!-- MTN MoMo -->
+                <div class="paiement-provider" onclick="selectProvider(this,'mtn')">
+                  <svg height="26" viewBox="0 0 60 26" fill="none" xmlns="http://www.w3.org/2000/svg"><rect width="60" height="26" rx="4" fill="#FFCC00"/><text x="30" y="18" font-family="Arial" font-weight="900" font-size="13" fill="#002244" text-anchor="middle">MTN</text></svg>
+                  <div class="paiement-provider-name">MTN MoMo</div>
+                </div>
+                <!-- Moov Money -->
+                <div class="paiement-provider" onclick="selectProvider(this,'moov')">
+                  <svg height="26" viewBox="0 0 70 26" fill="none" xmlns="http://www.w3.org/2000/svg"><rect width="70" height="26" rx="4" fill="#0066CC"/><text x="35" y="18" font-family="Arial" font-weight="bold" font-size="12" fill="white" text-anchor="middle">MOOV</text></svg>
+                  <div class="paiement-provider-name">Moov Money</div>
+                </div>
+                <!-- Wave -->
+                <div class="paiement-provider" onclick="selectProvider(this,'wave')">
+                  <svg height="26" viewBox="0 0 60 26" fill="none" xmlns="http://www.w3.org/2000/svg"><rect width="60" height="26" rx="4" fill="#1A73E8"/><text x="30" y="18" font-family="Arial" font-weight="bold" font-size="12" fill="white" text-anchor="middle">Wave</text></svg>
+                  <div class="paiement-provider-name">Wave</div>
+                </div>
+              </div>
+              <div class="form-group" style="margin-top:4px">
+                <label class="form-label">Numéro Mobile Money *</label>
+                <div class="phone-input-wrap">
+                  <div class="phone-indicatif-wrap" onclick="document.getElementById('r-ind-momo').focus();document.getElementById('r-ind-momo').click()">
+                    <div class="phone-indicatif-display" id="r-ind-momo-display">🇨🇮 +225</div>
+                    <select class="phone-indicatif-hidden" id="r-ind-momo" onchange="document.getElementById('r-ind-momo-display').textContent=this.options[this.selectedIndex].text">
+                      <option value="+225" selected>🇨🇮 +225</option>
+                      <option value="+221">🇸🇳 +221</option>
+                      <option value="+223">🇲🇱 +223</option>
+                      <option value="+226">🇧🇫 +226</option>
+                      <option value="+228">🇹🇬 +228</option>
+                      <option value="+229">🇧🇯 +229</option>
+                      <option value="+224">🇬🇳 +224</option>
+                      <option value="+227">🇳🇪 +227</option>
+                      <option value="+234">🇳🇬 +234</option>
+                      <option value="+233">🇬🇭 +233</option>
+                    </select>
+                  </div>
+                  <input class="phone-number" id="r-momo" placeholder="07 00 00 00 00" type="tel">
+                </div>
+              </div>
             </div>
           </div>
-        </div>
 
-        <!-- Panel Carte -->
-        <div id="panel-carte" class="paiement-panel">
-          <div class="paiement-providers" style="margin-bottom:16px">
-            <div class="paiement-provider selected" style="pointer-events:none">
-              <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/5/5e/Visa_Inc._logo.svg/120px-Visa_Inc._logo.svg.png" alt="Visa">
-              <div class="paiement-provider-name">Visa</div>
+          <!-- Carte bancaire -->
+          <div class="paiement-cat" id="cat-carte">
+            <div class="paiement-cat-header" onclick="selectCat('carte')">
+              <div class="paiement-cat-icon carte">
+                <svg width="22" height="16" viewBox="0 0 22 16" fill="none"><rect width="22" height="16" rx="3" fill="#1B4FD8" opacity=".15" stroke="#1B4FD8" stroke-width="1.2"/><rect y="4" width="22" height="4" fill="#1B4FD8" opacity=".25"/><rect x="2" y="10" width="6" height="2" rx="1" fill="#1B4FD8" opacity=".5"/><circle cx="17" cy="11" r="2.5" fill="#EB001B" opacity=".8"/><circle cx="20" cy="11" r="2.5" fill="#F79E1B" opacity=".8"/></svg>
+              </div>
+              <span class="paiement-cat-label">Carte bancaire</span>
+              <span class="paiement-cat-chevron">▼</span>
             </div>
-            <div class="paiement-provider selected" style="pointer-events:none">
-              <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/2/2a/Mastercard-logo.svg/120px-Mastercard-logo.svg.png" alt="Mastercard">
-              <div class="paiement-provider-name">Mastercard</div>
+            <div id="panel-carte" class="paiement-panel">
+              <div class="paiement-providers" style="margin-bottom:16px">
+                <div class="paiement-provider selected" style="pointer-events:none">
+                  <svg height="26" viewBox="0 0 70 26" fill="none" xmlns="http://www.w3.org/2000/svg"><rect width="70" height="26" rx="4" fill="#1A1F71"/><text x="35" y="18" font-family="Arial" font-style="italic" font-weight="bold" font-size="15" fill="white" text-anchor="middle">VISA</text></svg>
+                  <div class="paiement-provider-name">Visa</div>
+                </div>
+                <div class="paiement-provider selected" style="pointer-events:none">
+                  <svg height="26" viewBox="0 0 70 26" fill="none" xmlns="http://www.w3.org/2000/svg"><rect width="70" height="26" rx="4" fill="#F5F5F5"/><circle cx="27" cy="13" r="9" fill="#EB001B" opacity=".9"/><circle cx="43" cy="13" r="9" fill="#F79E1B" opacity=".9"/></svg>
+                  <div class="paiement-provider-name">Mastercard</div>
+                </div>
+              </div>
+              <div class="form-group">
+                <label class="form-label">Email de facturation *</label>
+                <input class="form-input" id="r-email-facturation" placeholder="votre@email.com" type="email">
+                <div class="form-hint">Nous vous enverrons un lien de paiement sécurisé par email</div>
+              </div>
             </div>
           </div>
-          <div class="form-group">
-            <label class="form-label">Email de facturation *</label>
-            <input class="form-input" id="r-email-facturation" placeholder="votre@email.com" type="email">
-            <div class="form-hint">Vous recevrez un lien de paiement sécurisé par email</div>
-          </div>
-        </div>
 
-        <!-- Panel PayPal -->
-        <div id="panel-paypal" class="paiement-panel">
-          <div class="paiement-providers" style="margin-bottom:16px">
-            <div class="paiement-provider selected" style="pointer-events:none;max-width:120px">
-              <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/b/b5/PayPal.svg/120px-PayPal.svg.png" alt="PayPal">
-              <div class="paiement-provider-name">PayPal</div>
+          <!-- PayPal -->
+          <div class="paiement-cat" id="cat-paypal">
+            <div class="paiement-cat-header" onclick="selectCat('paypal')">
+              <div class="paiement-cat-icon paypal">
+                <svg width="22" height="22" viewBox="0 0 22 22" fill="none"><path d="M16 5H9.5C8.7 5 8 5.6 7.8 6.3L6 16h4l.5-3h2.5c3 0 5-1.8 5.5-4.5.4-1.8-.7-3-2.5-3z" fill="#003087"/><path d="M9.5 9l-.5 3h2c1.8 0 3-1 3.3-2.5.2-1-.4-1.8-1.5-1.8L9.5 9z" fill="#009CDE"/></svg>
+              </div>
+              <span class="paiement-cat-label">PayPal</span>
+              <span class="paiement-cat-chevron">▼</span>
+            </div>
+            <div id="panel-paypal" class="paiement-panel">
+              <div class="paiement-providers" style="margin-bottom:16px">
+                <div class="paiement-provider selected" style="pointer-events:none;max-width:130px">
+                  <svg height="26" viewBox="0 0 100 26" fill="none" xmlns="http://www.w3.org/2000/svg"><rect width="100" height="26" rx="4" fill="#F5F8FF"/><text x="50" y="18" font-family="Arial" font-weight="bold" font-size="13" fill="#003087" text-anchor="middle">Pay</text><text x="66" y="18" font-family="Arial" font-weight="bold" font-size="13" fill="#009CDE" text-anchor="start">Pal</text></svg>
+                  <div class="paiement-provider-name">PayPal</div>
+                </div>
+              </div>
+              <div class="form-group">
+                <label class="form-label">Email PayPal *</label>
+                <input class="form-input" id="r-email-paypal" placeholder="votre@paypal.com" type="email">
+                <div class="form-hint">Vous recevrez une demande de paiement PayPal</div>
+              </div>
             </div>
           </div>
-          <div class="form-group">
-            <label class="form-label">Email PayPal *</label>
-            <input class="form-input" id="r-email-paypal" placeholder="votre@paypal.com" type="email">
-            <div class="form-hint">Vous recevrez une demande de paiement PayPal</div>
-          </div>
+
         </div>
 
         <div id="r-err2" class="form-err"></div>
@@ -861,13 +879,17 @@ footer{background:#0D1B40;color:rgba(255,255,255,.5);padding:40px 5%;text-align:
   let selectedCat='momo';
   let selectedProvider='orange';
 
-  window.selectCat=function(cat,el){
-    document.querySelectorAll('.paiement-cat').forEach(c=>c.classList.remove('active'));
-    el.classList.add('active');
-    selectedCat=cat;
-    ['momo','carte','paypal'].forEach(p=>{
-      document.getElementById('panel-'+p).classList.toggle('active',p===cat);
+  window.selectCat=function(cat){
+    const wasActive=document.getElementById('cat-'+cat).classList.contains('active');
+    ['momo','carte','paypal'].forEach(c=>{
+      document.getElementById('cat-'+c).classList.remove('active');
+      document.getElementById('panel-'+c).classList.remove('active');
     });
+    if(!wasActive){
+      document.getElementById('cat-'+cat).classList.add('active');
+      document.getElementById('panel-'+cat).classList.add('active');
+      selectedCat=cat;
+    }
   };
 
   window.selectProvider=function(el,provider){
