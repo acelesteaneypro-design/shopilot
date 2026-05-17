@@ -156,25 +156,20 @@ footer{background:#0D1B40;color:rgba(255,255,255,.5);padding:40px 5%;text-align:
 #autre-commerce-group{display:none}
 .paiement-step{display:none}
 .paiement-step.active{display:block}
-.paiement-cats{display:flex;flex-direction:column;gap:10px;margin-bottom:8px}
-.paiement-cat{border:2px solid var(--border);border-radius:16px;background:var(--white);overflow:hidden;transition:border-color .25s}
-.paiement-cat.active{border-color:var(--blue)}
-.paiement-cat-header{display:flex;align-items:center;gap:14px;padding:14px 16px;cursor:pointer;user-select:none}
-.paiement-cat-icon{width:40px;height:40px;border-radius:10px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
-.paiement-cat-icon.momo{background:#F0FFF4}
-.paiement-cat-icon.carte{background:#F5F7FF}
-.paiement-cat-icon.paypal{background:#EEF4FF}
-.paiement-cat-label{font-size:15px;font-weight:700;color:var(--text);flex:1}
-.paiement-cat-chevron{font-size:11px;color:var(--text2);transition:transform .25s}
-.paiement-cat.active .paiement-cat-chevron{transform:rotate(180deg)}
-.paiement-panel{display:none;padding:0 16px 16px}
-.paiement-panel.active{display:block;animation:fadeUp .2s ease}
-@keyframes fadeUp{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:translateY(0)}}
+.paiement-cats{display:flex;gap:10px;margin-bottom:20px}
+.paiement-cat{flex:1;padding:14px 8px;border:2px solid var(--border);border-radius:16px;text-align:center;cursor:pointer;transition:all .25s;background:var(--white);user-select:none}
+.paiement-cat:hover{border-color:var(--blue);box-shadow:0 2px 12px rgba(27,79,216,.08)}
+.paiement-cat.active{border-color:var(--blue);background:var(--blue-xl)}
+.paiement-cat-icon{height:40px;display:flex;align-items:center;justify-content:center;margin-bottom:6px}
+.paiement-cat-label{font-size:12px;font-weight:700;color:var(--text);letter-spacing:.3px}
+.paiement-panel{display:none;animation:fadeUp .2s ease}
+.paiement-panel.active{display:block}
+@keyframes fadeUp{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
 .paiement-providers{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:16px}
-.paiement-provider{flex:1;min-width:68px;padding:10px 6px;border:2px solid var(--border);border-radius:12px;text-align:center;cursor:pointer;transition:all .2s;background:var(--white)}
+.paiement-provider{flex:1;min-width:72px;padding:12px 8px;border:2px solid var(--border);border-radius:12px;text-align:center;cursor:pointer;transition:all .2s;background:var(--white)}
 .paiement-provider:hover{border-color:var(--blue)}
 .paiement-provider.selected{border-color:var(--blue);background:var(--blue-xl)}
-.paiement-provider svg,.paiement-provider img{display:block;margin:0 auto 5px;height:32px;width:32px;border-radius:6px;object-fit:cover}
+.paiement-provider img{display:block;margin:0 auto 6px;height:44px;width:44px;border-radius:8px;object-fit:cover}
 .paiement-provider-name{font-size:11px;font-weight:600;color:var(--text2)}
 .paiement-divider{display:flex;align-items:center;gap:12px;margin:16px 0}
 .paiement-divider::before,.paiement-divider::after{content:'';flex:1;height:1px;background:var(--border)}
@@ -874,16 +869,12 @@ footer{background:#0D1B40;color:rgba(255,255,255,.5);padding:40px 5%;text-align:
   let selectedProvider='orange';
 
   window.selectCat=function(cat){
-    const wasActive=document.getElementById('cat-'+cat).classList.contains('active');
-    ['momo','carte','paypal'].forEach(c=>{
-      document.getElementById('cat-'+c).classList.remove('active');
-      document.getElementById('panel-'+c).classList.remove('active');
+    document.querySelectorAll('.paiement-cat').forEach(c=>c.classList.remove('active'));
+    document.getElementById('cat-'+cat).classList.add('active');
+    ['momo','carte','paypal'].forEach(p=>{
+      document.getElementById('panel-'+p).classList.toggle('active',p===cat);
     });
-    if(!wasActive){
-      document.getElementById('cat-'+cat).classList.add('active');
-      document.getElementById('panel-'+cat).classList.add('active');
-      selectedCat=cat;
-    }
+    selectedCat=cat;
   };
 
   window.selectProvider=function(el,provider){
