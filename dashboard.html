@@ -584,8 +584,30 @@ const firebaseConfig = {
 };
 
 const app = initializeApp(firebaseConfig);
+// ── SÉCURITÉ : échappement HTML ──────────────────────────────────────
+function esc(str){
+  if(str===null||str===undefined)return '';
+  return String(str)
+    .replace(/&/g,'&amp;')
+    .replace(/</g,'&lt;')
+    .replace(/>/g,'&gt;')
+    .replace(/"/g,'&quot;')
+    .replace(/'/g,'&#x27;')
+    .replace(/\//g,'&#x2F;');
+}
+
+// Validation URL Firebase
+function isValidFirebaseUrl(url){
+  if(!url)return true; // optionnel
+  try{
+    const u=new URL(url);
+    return u.protocol==='https:'&&u.hostname.endsWith('.firebasedatabase.app');
+  }catch{return false;}
+}
+
+
 const db = getDatabase(app);
-const ADMIN_PWD = 'Vnge@ney2008';
+const ADMIN_PWD_HASH = 'ee31d400aa564e5d082657157e248daafc529b9e2472f884cc9ba4a947813a00';
 let clientsData = [];
 let demandesData = [];
 let currentFilter = 'all';
@@ -646,9 +668,13 @@ setInterval(()=>{
 
 // ── LOGIN ────────────────────────────────────────────────
 let loginAttempts=0,blockUntil=0;
-window.loginAdmin=function(){
+window.loginAdmin=async function(){
   if(Date.now()<blockUntil){const mins=Math.ceil((blockUntil-Date.now())/60000);document.getElementById('login-err').textContent=`⛔ Bloqué. Réessayez dans ${mins} min.`;return}
-  if(document.getElementById('admin-pwd').value===ADMIN_PWD){
+  const inputPwd = document.getElementById('admin-pwd').value;
+  const enc = new TextEncoder();
+  const hashBuf = await crypto.subtle.digest('SHA-256', enc.encode(inputPwd));
+  const hashHex = Array.from(new Uint8Array(hashBuf)).map(b=>b.toString(16).padStart(2,'0')).join('');
+  if(hashHex === ADMIN_PWD_HASH){
     loginAttempts=0;
     document.getElementById('login-overlay').style.display='none';
     document.getElementById('main-layout').style.display='flex';
@@ -721,10 +747,10 @@ function updateAlerts(){
   const enRetard=clientsData.filter(c=>getDateFin(c)&&getDateFin(c)<today()&&c.plan!=='Fondateur');
   const bientot=clientsData.filter(isExpiringSoon);
   if(enRetard.length>0){
-    alerts.push(`<div class="alert-banner alert-banner-red"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12" y2="16"/></svg><div><strong>${enRetard.length} client${enRetard.length>1?'s':''} en retard de paiement</strong> — ${enRetard.map(c=>c.nom).join(', ')}</div></div>`);
+    alerts.push(`<div class="alert-banner alert-banner-red"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12" y2="16"/></svg><div><strong>${enRetard.length} client${enRetard.length>1?'s':''} en retard de paiement</strong> — ${enRetard.map(c=>esc(c.nom)).join(', ')}</div></div>`);
   }
   if(bientot.length>0){
-    alerts.push(`<div class="alert-banner"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg><div><strong>${bientot.length} abonnement${bientot.length>1?'s':''} expirant dans 7 jours</strong> — ${bientot.map(c=>c.nom).join(', ')}</div></div>`);
+    alerts.push(`<div class="alert-banner"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg><div><strong>${bientot.length} abonnement${bientot.length>1?'s':''} expirant dans 7 jours</strong> — ${bientot.map(c=>esc(c.nom)).join(', ')}</div></div>`);
   }
   zone.innerHTML=alerts.join('');
   // Badge expire dans sidebar
@@ -764,7 +790,7 @@ window.searchClients=function(q){
     return s.includes(q.toLowerCase());
   }).slice(0,8);
   if(!matches.length){res.innerHTML='<div style="padding:12px 16px;color:var(--text2);font-size:13px">Aucun résultat</div>';res.classList.add('open');return}
-  res.innerHTML=matches.map(c=>`<div class="search-result-item" onmousedown="ouvrirPageClient('${c.id}');closeSearch()"><div class="search-result-name">${c.nom}</div><div class="search-result-sub">${c.type} • ${c.plan} • ${c.email||''}</div></div>`).join('');
+  res.innerHTML=matches.map(c=>`<div class="search-result-item" onmousedown="ouvrirPageClient('${esc(c.id)}');closeSearch()"><div class="search-result-name">${esc(c.nom)}</div><div class="search-result-sub">${esc(c.type)} • ${esc(c.plan)} • ${esc(c.email)}</div></div>`).join('');
   res.classList.add('open');
 };
 window.closeSearch=function(){document.getElementById('search-results').classList.remove('open')};
@@ -819,9 +845,9 @@ function renderDashboard(){
   const recent=clientsData.slice().reverse().slice(0,5);
   document.getElementById('recent-table').innerHTML=recent.length?`
     <thead><tr><th>Commerce</th><th>Plan</th><th>Statut</th><th>Créé le</th></tr></thead>
-    <tbody>${recent.map(c=>`<tr onclick="ouvrirPageClient('${c.id}')" style="cursor:pointer">
-      <td><div class="client-name">${c.nom}</div><div class="client-type">${c.type}</div></td>
-      <td><span class="${getPlanBadgeClass(c)}">${c.plan}</span></td>
+    <tbody>${recent.map(c=>`<tr onclick="ouvrirPageClient('${esc(c.id)}')" style="cursor:pointer">
+      <td><div class="client-name">${esc(c.nom)}</div><div class="client-type">${esc(c.type)}</div></td>
+      <td><span class="${getPlanBadgeClass(c)}">${esc(c.plan)}</span></td>
       <td><span class="badge ${getBadgeClass(c)}">${getBadgeText(c)}</span></td>
       <td>${fmt(c.dateCreation)}</td>
     </tr>`).join('')}</tbody>`:'<tr><td colspan="4" style="text-align:center;padding:40px;color:var(--text2)">Aucun client</td></tr>';
@@ -893,16 +919,16 @@ function renderClients(){
   table.innerHTML=`
     <thead><tr><th>Commerce</th><th>Plan</th><th>Statut</th><th>Accès</th><th>Actions</th></tr></thead>
     <tbody>${page.map(c=>`<tr>
-      <td onclick="ouvrirPageClient('${c.id}')" style="cursor:pointer"><div class="client-name">${c.nom}</div><div class="client-type">${c.type} • ${c.phone||''}</div></td>
-      <td><span class="${getPlanBadgeClass(c)}">${c.plan}</span></td>
+      <td onclick="ouvrirPageClient('${esc(c.id)}')" style="cursor:pointer"><div class="client-name">${esc(c.nom)}</div><div class="client-type">${esc(c.type)} • ${esc(c.phone)}</div></td>
+      <td><span class="${getPlanBadgeClass(c)}">${esc(c.plan)}</span></td>
       <td><span class="badge ${getBadgeClass(c)}">${getBadgeText(c)}</span></td>
-      <td style="font-size:12px;color:var(--text2)">🔐 <code>${c.acces?.mdpServeur||''}</code><br>👑 <code>${c.acces?.mdpGerant||''}</code><br>${c.acces?.lienServeur?`<a href="${c.acces.lienServeur}" target="_blank" style="color:var(--blue);font-size:11px">🌐 Ouvrir →</a>`:''}</td>
+      <td style="font-size:12px;color:var(--text2)">🔐 <code>${esc(c.acces?.mdpServeur)}</code><br>👑 <code>${esc(c.acces?.mdpGerant)}</code><br>${c.acces?.lienServeur?`<a href="${esc(c.acces.lienServeur)}" target="_blank" rel="noopener noreferrer" style="color:var(--blue);font-size:11px">🌐 Ouvrir →</a>`:''}</td>
       <td>
-        <button class="action-btn" onclick="copierAcces('${c.id}')" data-tip="Copier accès">📋</button>
-        <button class="action-btn" onclick="ouvrirEdit('${c.id}')" data-tip="Modifier">✏️</button>
-        <button class="action-btn" onclick="ouvrirPlan('${c.id}')" data-tip="Changer plan">🔄</button>
-        <button class="action-btn" onclick="toggleStatut('${c.id}')" data-tip="${c.statut==='active'?'Suspendre':'Activer'}">▶/⏸</button>
-        <button class="action-btn danger" onclick="demanderSuppression('${c.id}')" data-tip="Supprimer">🗑</button>
+        <button class="action-btn" onclick="copierAcces('${esc(c.id)}')" data-tip="Copier accès">📋</button>
+        <button class="action-btn" onclick="ouvrirEdit('${esc(c.id)}')" data-tip="Modifier">✏️</button>
+        <button class="action-btn" onclick="ouvrirPlan('${esc(c.id)}')" data-tip="Changer plan">🔄</button>
+        <button class="action-btn" onclick="toggleStatut('${esc(c.id)}')" data-tip="${c.statut==='active'?'Suspendre':'Activer'}">▶/⏸</button>
+        <button class="action-btn danger" onclick="demanderSuppression('${esc(c.id)}')" data-tip="Supprimer">🗑</button>
       </td>
     </tr>`).join('')}</tbody>`;
 
@@ -941,8 +967,8 @@ window.ouvrirPageClient=function(id){
   document.getElementById('page-client-detail').style.display='block';
   const initiale=c.nom.charAt(0).toUpperCase();
   document.getElementById('detail-avatar').textContent=initiale;
-  document.getElementById('detail-nom').textContent=c.nom;
-  document.getElementById('detail-type-phone').textContent=`${c.type} • ${c.phone||'—'}`;
+  document.getElementById('detail-nom').textContent=esc(c.nom);
+  document.getElementById('detail-type-phone').textContent=`${esc(c.type)} • ${esc(c.phone)||'—'}`;
   document.getElementById('detail-badges').innerHTML=`<span class="badge ${getBadgeClass(c)}">${getBadgeText(c)}</span><span class="${getPlanBadgeClass(c)}" style="padding:4px 10px;border-radius:20px;font-size:11px;font-weight:700">${c.plan}</span>`;
   const nbJours=Math.max(1,Math.ceil((Date.now()-(c.tsCreation||Date.now()))/(1000*60*60*24)));
   const jr=daysUntil(getDateFin(c));
@@ -954,15 +980,15 @@ window.ouvrirPageClient=function(id){
     <div class="detail-stat"><div class="detail-stat-val">${revMois>0?revMois.toLocaleString('fr-FR')+' F':'—'}</div><div class="detail-stat-label">Revenus/mois</div></div>
     <div class="detail-stat"><div class="detail-stat-val">${c.statut==='active'||c.plan==='Fondateur'?'🟢':'🟡'}</div><div class="detail-stat-label">Statut</div></div>`;
   document.getElementById('detail-infos').innerHTML=`
-    <div class="info-row"><span class="info-label">📧 Email principal</span><span class="info-val">${c.email||'—'}</span></div>
-    <div class="info-row"><span class="info-label">📧 Email secondaire</span><span class="info-val">${c.email2||'—'}</span></div>
-    <div class="info-row"><span class="info-label">📱 WhatsApp</span><span class="info-val">${c.phone||'—'}</span></div>
+    <div class="info-row"><span class="info-label">📧 Email principal</span><span class="info-val">${esc(c.email)||'—'}</span></div>
+    <div class="info-row"><span class="info-label">📧 Email secondaire</span><span class="info-val">${esc(c.email2)||'—'}</span></div>
+    <div class="info-row"><span class="info-label">📱 WhatsApp</span><span class="info-val">${esc(c.phone)||'—'}</span></div>
     <div class="info-row"><span class="info-label">📅 Date de création</span><span class="info-val">${fmt(c.dateCreation)}</span></div>
     <div class="info-row"><span class="info-label">📅 Fin d'abonnement</span><span class="info-val">${fmt(getDateFin(c))}</span></div>
-    <div class="info-row"><span class="info-label">🔐 MDP Serveur</span><span class="info-val"><code>${c.acces?.mdpServeur||'—'}</code></span></div>
-    <div class="info-row"><span class="info-label">👑 MDP Gérant</span><span class="info-val"><code>${c.acces?.mdpGerant||'—'}</code></span></div>
-    <div class="info-row"><span class="info-label">🌐 App Serveurs</span><span class="info-val"><a href="${c.acces?.lienServeur||'#'}" target="_blank">${c.acces?.lienServeur||'—'}</a></span></div>
-    <div class="info-row"><span class="info-label">👑 App Gérant</span><span class="info-val"><a href="${c.acces?.lienGerant||'#'}" target="_blank">${c.acces?.lienGerant||'—'}</a></span></div>`;
+    <div class="info-row"><span class="info-label">🔐 MDP Serveur</span><span class="info-val"><code>${esc(c.acces?.mdpServeur)||'—'}</code></span></div>
+    <div class="info-row"><span class="info-label">👑 MDP Gérant</span><span class="info-val"><code>${esc(c.acces?.mdpGerant)||'—'}</code></span></div>
+    <div class="info-row"><span class="info-label">🌐 App Serveurs</span><span class="info-val"><a href="${esc(c.acces?.lienServeur)||'#'}" target="_blank" rel="noopener noreferrer">${esc(c.acces?.lienServeur)||'—'}</a></span></div>
+    <div class="info-row"><span class="info-label">👑 App Gérant</span><span class="info-val"><a href="${esc(c.acces?.lienGerant)||'#'}" target="_blank" rel="noopener noreferrer">${esc(c.acces?.lienGerant)||'—'}</a></span></div>`;
   const joursPaye=c.abonnement?.dateDebut?Math.max(0,Math.ceil((new Date(today())-new Date(c.abonnement.dateDebut+'T00:00:00'))/(1000*60*60*24))):0;
   const prixMois=c.plan==='Starter'?5000:c.plan==='Pro'?10000:c.plan==='Business'?20000:0;
   const totalPaye=c.plan==='Fondateur'?0:Math.floor(joursPaye/30)*prixMois;
@@ -1004,9 +1030,9 @@ function renderDemandes(){
   if(!demandesData.length){list.innerHTML='<div class="empty-state"><div class="empty-icon">📭</div><p>Aucune demande en attente</p></div>';return}
   list.innerHTML=demandesData.map(dem=>`
     <div class="demande-card">
-      <div class="demande-info"><div class="demande-name">${dem.nom}</div>
-      <div class="demande-details">${dem.type} • ${dem.email} • ${dem.phone} • Plan <strong>${dem.plan}</strong> • 💳 ${dem.paiement||''} • ${fmt(dem.date)}</div></div>
-      <div class="demande-actions"><button class="btn-approve" onclick="approuver('${dem.id}')">✓ Approuver</button><button class="btn-reject" onclick="rejeter('${dem.id}')">✗ Rejeter</button></div>
+      <div class="demande-info"><div class="demande-name">${esc(dem.nom)}</div>
+      <div class="demande-details">${esc(dem.type)} • ${esc(dem.email)} • ${esc(dem.phone)} • Plan <strong>${esc(dem.plan)}</strong> • 💳 ${esc(dem.paiement)} • ${fmt(dem.date)}</div></div>
+      <div class="demande-actions"><button class="btn-approve" onclick="approuver('${esc(dem.id)}')">✓ Approuver</button><button class="btn-reject" onclick="rejeter('${esc(dem.id)}')">✗ Rejeter</button></div>
     </div>`).join('');
 }
 
@@ -1029,10 +1055,10 @@ window.chargerHistorique=async function(){
     const actionIcons={'changement_plan':'🔄','creation':'🎉','suspension':'⏸','activation':'✅','suppression':'🗑'};
     list.innerHTML=items.slice(0,50).map(item=>`
       <div class="histo-item">
-        <div class="histo-icon">${actionIcons[item.action]||'📝'}</div>
+        <div class="histo-icon">${actionIcons[esc(item.action)]||'📝'}</div>
         <div class="histo-content">
-          <div class="histo-title">${item.action==='changement_plan'?`Plan changé : ${item.ancien} → ${item.nouveau}`:item.action||'Action'}</div>
-          <div class="histo-meta">Client : <strong>${item.clientNom}</strong> • ${item.date||'—'}</div>
+          <div class="histo-title">${item.action==='changement_plan'?`Plan changé : ${esc(item.ancien)} → ${esc(item.nouveau)}`:esc(item.action)||'Action'}</div>
+          <div class="histo-meta">Client : <strong>${esc(item.clientNom)}</strong> • ${esc(item.date)||'—'}</div>
         </div>
       </div>`).join('');
   }catch(e){list.innerHTML='<div class="empty-state"><div class="empty-icon">❌</div><p>Erreur de chargement</p></div>'}
@@ -1087,8 +1113,10 @@ window.sauverModifs=async function(){
   const id=document.getElementById('edit-client-id').value;
   const c=clientsData.find(x=>x.id===id);if(!c)return;
   const email=document.getElementById('edit-email').value.trim();
+  const fbUrlEdit=document.getElementById('edit-firebase-url').value.trim();
   const emailEl=document.getElementById('edit-email');
   if(!email||!email.includes('@')){emailEl.classList.add('error');document.getElementById('edit-err').textContent='⚠️ Email invalide';document.getElementById('edit-err').style.display='block';return}
+  if(fbUrlEdit&&!isValidFirebaseUrl(fbUrlEdit)){document.getElementById('edit-firebase-url').classList.add('error');document.getElementById('edit-err').textContent='⚠️ URL Firebase invalide (doit se terminer par .firebasedatabase.app)';document.getElementById('edit-err').style.display='block';return}
   emailEl.classList.remove('error');
   try{
     const updates={
@@ -1122,7 +1150,7 @@ window.sauverModifs=async function(){
 // ── SUPPRESSION avec modale ───────────────────────────────
 window.demanderSuppression=function(id){
   const c=clientsData.find(x=>x.id===id);if(!c)return;
-  document.getElementById('delete-client-nom').textContent=`${c.nom} (${c.plan})`;
+  document.getElementById('delete-client-nom').textContent=`${esc(c.nom)} (${esc(c.plan)})`;
   document.getElementById('delete-client-id').value=id;
   document.getElementById('delete-confirm-input').value='';
   document.getElementById('btn-delete-confirm').disabled=true;
@@ -1179,7 +1207,11 @@ window.creerClient=async function(){
   if(typeSelect==='Autre'&&!typeAutre){highlightError('n-type-autre','⚠️ Précisez le type de commerce.');return}
   if(!email||!email.includes('@')){highlightError('n-email','⚠️ Email invalide.');return}
   if(!phone){highlightError('n-phone','⚠️ Numéro WhatsApp requis.');return}
+  if(firebaseUrl&&!isValidFirebaseUrl(firebaseUrl)){highlightError('n-firebase-url','⚠️ URL Firebase invalide. Elle doit commencer par https:// et se terminer par .firebasedatabase.app');return}
 
+  // Rate limiting : 1 création toutes les 10 secondes
+  const lastCreate=parseInt(localStorage.getItem('shopilot_last_create')||'0');
+  if(Date.now()-lastCreate<10000){highlightError('n-nom','⚠️ Veuillez patienter quelques secondes avant de créer un autre client.');return}
   const btn=document.getElementById('btn-creer');
   btn.textContent='Création…';btn.disabled=true;
   const statut=plan==='Fondateur'?'active':'trial';
@@ -1212,6 +1244,7 @@ window.creerClient=async function(){
       syncMsg='<br><br>⚠️ <span style="color:var(--orange);font-weight:600">Aucune URL Firebase — MDP à initialiser via init-mdp.html</span>';
     }
 
+    localStorage.setItem('shopilot_last_create', Date.now());
     document.getElementById('nouveau-form').style.display='none';
     document.getElementById('success-info').innerHTML=`<strong>Commerce :</strong> ${nom}<br><strong>Plan :</strong> ${plan}<br><br>🔐 <strong>MDP serveur :</strong> ${pwdS}<br>👑 <strong>MDP gérant :</strong> ${pwdG}${syncMsg}<br><br><em style="font-size:12px">Envoyez ces informations au client via WhatsApp</em>`;
     document.getElementById('nouveau-success').style.display='block';

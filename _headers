@@ -1,17 +1,38 @@
+# ── Headers de sécurité Shopilot ──────────────────────────────────────
+# Cloudflare Pages — appliqué automatiquement à chaque requête
+
+# Headers globaux sur tout le site
 /*
+  X-Content-Type-Options: nosniff
   X-Frame-Options: SAMEORIGIN
-  X-XSS-Protection: 1; mode=block
+  Referrer-Policy: strict-origin-when-cross-origin
+  Permissions-Policy: camera=(), microphone=(), geolocation=(), payment=()
+
+# Dashboard — protection maximale, jamais dans un iframe
+/dashboard.html
+  X-Frame-Options: DENY
+  X-Content-Type-Options: nosniff
+  Referrer-Policy: no-referrer
+  Permissions-Policy: camera=(), microphone=(), geolocation=(), payment=()
+  Cache-Control: no-store, no-cache, must-revalidate
+
+# Landing page — autorise les iframes du même domaine uniquement
+/index.html
+  X-Frame-Options: SAMEORIGIN
   X-Content-Type-Options: nosniff
   Referrer-Policy: strict-origin-when-cross-origin
 
-/dashboard.html
-  X-Robots-Tag: noindex, nofollow, noarchive
-  Cache-Control: no-cache, no-store, must-revalidate
-  Pragma: no-cache
-  Expires: 0
+# Politique de confidentialité
+/confidentialite.html
+  X-Frame-Options: SAMEORIGIN
+  X-Content-Type-Options: nosniff
 
-/admin.html
-  X-Robots-Tag: noindex, nofollow, noarchive
-  Cache-Control: no-cache, no-store, must-revalidate
-  Pragma: no-cache
-  Expires: 0
+# Fichiers statiques — cache long, immutables
+/*.jpg
+  Cache-Control: public, max-age=31536000, immutable
+
+/*.png
+  Cache-Control: public, max-age=31536000, immutable
+
+/*.ico
+  Cache-Control: public, max-age=31536000, immutable
