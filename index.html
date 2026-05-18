@@ -573,7 +573,7 @@ footer{background:#0D1B40;color:rgba(255,255,255,.5);padding:40px 5%;text-align:
           <li class="p-feat"><span class="p-check-gold">✓</span><span class="p-feat-txt"><strong>Support dédié 7j/7</strong>Gestionnaire attitré, réponse sous 1h</span></li>
         </ul>
         <div class="p-upgrade-hint-gold">👑 Chaque Business est unique. Parlons de vos besoins et construisons ensemble votre solution.</div>
-        <a href="https://wa.me/2250712962296?text=Bonjour%20Shopilot%2C%20je%20suis%20int%C3%A9ress%C3%A9%20par%20le%20plan%20Business.%20Pouvez-vous%20me%20faire%20un%20devis%20%3F" target="_blank" class="btn-plan btn-pb" style="display:block;text-align:center;text-decoration:none">Obtenir un devis →</a>
+        <a href="https://wa.me/2250712962296?text=Bonjour%20Shopilot%2C%20je%20suis%20int%C3%A9ress%C3%A9%20par%20le%20plan%20Business.%20Pouvez-vous%20me%20faire%20un%20devis%20%3F" target="_blank" class="btn-plan btn-pb" style="display:block;text-align:center;text-decoration:none" rel="noopener noreferrer">Obtenir un devis →</a>
       </div>
     </div>
     <p style="text-align:center;margin-top:32px;font-size:14px;color:var(--text2)">🎁 <strong style="color:var(--text)">14 jours gratuits</strong> sur les plans Starter et Pro — sans engagement · Résiliable à tout moment · Plan Business sur devis</p>
@@ -619,11 +619,11 @@ footer{background:#0D1B40;color:rgba(255,255,255,.5);padding:40px 5%;text-align:
     <div class="reg-box reveal">
       <div id="reg-step1" class="paiement-step active">
         <div class="form-row">
-          <div class="form-group"><label class="form-label">Nom du commerce *</label><input class="form-input" id="r-nom" placeholder="Ex: Chez Marie" type="text"></div>
+          <div class="form-group"><label class="form-label">Nom du commerce *</label><input class="form-input" id="r-nom" placeholder="Ex: Chez Marie" maxlength="100" type="text"></div>
           <div class="form-group"><label class="form-label">Type de commerce *</label><select class="form-input" id="r-type" onchange="toggleAutreCommerce()"><option value="">Choisissez...</option><option>Restaurant</option><option>Maquis</option><option>Fast-food / Snack</option><option>Boulangerie</option><option>Boutique</option><option>Salon de coiffure</option><option>Café / Bar</option><option>Autre</option></select></div>
         </div>
         <div class="form-group" id="autre-commerce-group"><label class="form-label">Précisez votre type de commerce *</label><input class="form-input" id="r-type-autre" placeholder="Ex: Quincaillerie, Pharmacie, Couture..." type="text"></div>
-        <div class="form-group"><label class="form-label">Email *</label><input class="form-input" id="r-email" placeholder="votre@email.com" type="email"></div>
+        <div class="form-group"><label class="form-label">Email *</label><input class="form-input" id="r-email" placeholder="votre@email.com" type="email" maxlength="150"></div>
         <div class="form-group"><label class="form-label">Numéro WhatsApp *</label>
           <div class="phone-input-wrap">
             <div class="phone-indicatif-wrap" onclick="document.getElementById('r-indicatif').focus();document.getElementById('r-indicatif').click()">
@@ -827,10 +827,10 @@ footer{background:#0D1B40;color:rgba(255,255,255,.5);padding:40px 5%;text-align:
                 <option value="+263">🇿🇼 +263</option>
               </select>
             </div>
-            <input class="phone-number" id="r-phone" placeholder="07 00 00 00 00" type="tel">
+            <input class="phone-number" id="r-phone" placeholder="07 00 00 00 00" type="tel" maxlength="15">
           </div>
           <div class="form-hint">Nous vous enverrons vos accès via WhatsApp</div></div>
-        <div class="form-group"><label class="form-label">Plan souhaité</label><select class="form-input" id="r-plan"><option>Starter — 5 000 FCFA/mois</option><option selected>Pro — 10 000 FCFA/mois</option></select><div class="form-hint">Plan Business ? <a href="https://wa.me/2250712962296?text=Bonjour%2C%20je%20suis%20int%C3%A9ress%C3%A9%20par%20le%20plan%20Business" target="_blank" style="color:var(--blue);font-weight:600">Contactez-nous pour un devis →</a></div></div>
+        <div class="form-group"><label class="form-label">Plan souhaité</label><select class="form-input" id="r-plan"><option>Starter — 5 000 FCFA/mois</option><option selected>Pro — 10 000 FCFA/mois</option></select><div class="form-hint">Plan Business ? <a href="https://wa.me/2250712962296?text=Bonjour%2C%20je%20suis%20int%C3%A9ress%C3%A9%20par%20le%20plan%20Business" target="_blank" style="color:var(--blue);font-weight:600" rel="noopener noreferrer">Contactez-nous pour un devis →</a></div></div>
         <div id="r-err" class="form-err"></div>
         <button class="btn-submit" onclick="goToPaiement()">Continuer vers le paiement 💳</button>
         <div class="guarantee">🔒 Données protégées · Aucun débit pendant l'essai · Résiliable à tout moment</div>
@@ -902,7 +902,7 @@ footer{background:#0D1B40;color:rgba(255,255,255,.5);padding:40px 5%;text-align:
                   <option value="+233">🇬🇭 +233</option>
                 </select>
               </div>
-              <input class="phone-number" id="r-momo" placeholder="07 00 00 00 00" type="tel">
+              <input class="phone-number" id="r-momo" placeholder="07 00 00 00 00" type="tel" maxlength="15">
             </div>
           </div>
         </div>
@@ -965,7 +965,7 @@ footer{background:#0D1B40;color:rgba(255,255,255,.5);padding:40px 5%;text-align:
         <div class="contact-btn-label">Email</div>
         <div class="contact-btn-val">acelesteaneypro@gmail.com</div>
       </a>
-      <a href="https://wa.me/2250712962296" target="_blank" class="contact-btn-card contact-btn-wa">
+      <a href="https://wa.me/2250712962296" target="_blank" class="contact-btn-card contact-btn-wa" rel="noopener noreferrer">
         <div class="contact-btn-icon">💬</div>
         <div class="contact-btn-label">WhatsApp</div>
         <div class="contact-btn-val">+225 07 12 96 22 96</div>
@@ -974,11 +974,11 @@ footer{background:#0D1B40;color:rgba(255,255,255,.5);padding:40px 5%;text-align:
     <div class="reg-box reveal" id="contact-form-box">
       <p style="font-family:'Syne',sans-serif;font-weight:700;font-size:16px;margin-bottom:20px;color:var(--text)">✉️ Envoyer un message</p>
       <div class="form-row">
-        <div class="form-group"><label class="form-label">Votre nom *</label><input class="form-input" id="c-nom" placeholder="Ex: Jean Kouassi" type="text"></div>
+        <div class="form-group"><label class="form-label">Votre nom *</label><input class="form-input" id="c-nom" maxlength="100" placeholder="Ex: Jean Kouassi" type="text"></div>
         <div class="form-group"><label class="form-label">Votre email *</label><input class="form-input" id="c-email" placeholder="votre@email.com" type="email"></div>
       </div>
       <div class="form-group"><label class="form-label">Sujet *</label><select class="form-input" id="c-sujet"><option value="">Choisissez un sujet...</option><option>Question sur un plan tarifaire</option><option>Problème technique</option><option>Demande de démo</option><option>Partenariat</option><option>Autre</option></select></div>
-      <div class="form-group"><label class="form-label">Message *</label><textarea class="form-input" id="c-message" rows="4" placeholder="Décrivez votre question ou demande..." style="resize:vertical"></textarea></div>
+      <div class="form-group"><label class="form-label">Message *</label><textarea class="form-input" id="c-message" maxlength="1000" rows="4" placeholder="Décrivez votre question ou demande..." style="resize:vertical"></textarea></div>
       <div id="c-err" class="form-err"></div>
       <button class="btn-submit" id="btn-contact" onclick="envoyerMessage()">Envoyer le message 📤</button>
       <div id="c-success" style="display:none;text-align:center;padding:20px 0">
@@ -1012,6 +1012,25 @@ footer{background:#0D1B40;color:rgba(255,255,255,.5);padding:40px 5%;text-align:
   };
   const app = initializeApp(firebaseConfig);
   const db = getDatabase(app);
+
+  // ── SÉCURITÉ ──────────────────────────────────────────────────────
+  function sanitize(str){
+    if(!str)return '';
+    return String(str)
+      .replace(/[<>"'`]/g,'')   // supprime les caractères HTML dangereux
+      .trim()
+      .substring(0,500);          // limite la longueur max
+  }
+
+  function isValidEmail(e){
+    return /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(e);
+  }
+
+  function isValidPhone(p){
+    return p.replace(/\D/g,'').length>=6&&p.replace(/\D/g,'').length<=15;
+  }
+
+
 
   window.addEventListener('scroll',()=>document.getElementById('nav').classList.toggle('scrolled',scrollY>20));
   const obs=new IntersectionObserver(e=>e.forEach(x=>{if(x.isIntersecting)x.target.classList.add('visible')}),{threshold:.08});
@@ -1047,9 +1066,16 @@ footer{background:#0D1B40;color:rgba(255,255,255,.5);padding:40px 5%;text-align:
     if(!nom||!email||!sujet||!message){err.textContent='⚠️ Veuillez remplir tous les champs.';err.style.display='block';return}
     if(!email.includes('@')){err.textContent='⚠️ Email invalide.';err.style.display='block';return}
     err.style.display='none';
+    const lastContact=parseInt(localStorage.getItem('shopilot_last_contact')||'0');
+    if(Date.now()-lastContact<60000){
+      err.textContent='⚠️ Veuillez patienter 1 minute avant d\'envoyer un autre message.';
+      err.style.display='block';
+      return;
+    }
+    localStorage.setItem('shopilot_last_contact', Date.now());
     const btn=document.getElementById('btn-contact');
     btn.textContent='⏳ Envoi...';btn.disabled=true;
-    const msg=`📩 *Nouveau message Shopilot*%0A%0A👤 Nom : ${nom}%0A📧 Email : ${email}%0A📋 Sujet : ${sujet}%0A%0A💬 Message :%0A${encodeURIComponent(message)}`;
+    const msg=`📩 *Nouveau message Shopilot*%0A%0A👤 Nom : ${encodeURIComponent(sanitize(nom))}%0A📧 Email : ${encodeURIComponent(sanitize(email))}%0A📋 Sujet : ${encodeURIComponent(sanitize(sujet))}%0A%0A💬 Message :%0A${encodeURIComponent(sanitize(message))}`;
     window.open(`https://wa.me/2250712962296?text=${msg}`,'_blank');
     document.getElementById('c-success').style.display='block';
     document.getElementById('c-nom').closest('div').style.display='none';
@@ -1084,7 +1110,7 @@ footer{background:#0D1B40;color:rgba(255,255,255,.5);padding:40px 5%;text-align:
     const phone=indicatif+' '+phoneRaw;
     if(!nom||!typeSelect||!email||!phoneRaw){showErr('r-err','⚠️ Veuillez remplir tous les champs obligatoires.');return}
     if(typeSelect==='Autre'&&!typeAutre){showErr('r-err','⚠️ Veuillez préciser votre type de commerce.');return}
-    if(!email.includes('@')||!email.includes('.')){showErr('r-err','⚠️ Adresse email invalide.');return}
+    if(!isValidEmail(email)){showErr('r-err','⚠️ Adresse email invalide.');return}
     if(phoneRaw.replace(/\D/g,'').length<6){showErr('r-err','⚠️ Numéro WhatsApp invalide.');return}
     hideErr('r-err');
     document.getElementById('reg-step1').classList.remove('active');
@@ -1116,28 +1142,41 @@ footer{background:#0D1B40;color:rgba(255,255,255,.5);padding:40px 5%;text-align:
       infoPaiement=indMomo+' '+momoRaw;
     } else if(selectedCat==='carte'){
       const ef=document.getElementById('r-email-facturation').value.trim();
-      if(!ef||!ef.includes('@')){showErr('r-err2','⚠️ Email de facturation invalide.');return}
+      if(!ef||!isValidEmail(ef)){showErr('r-err2','⚠️ Email de facturation invalide.');return}
       infoPaiement=ef;
     } else if(selectedCat==='paypal'){
       const ep=document.getElementById('r-email-paypal').value.trim();
-      if(!ep||!ep.includes('@')){showErr('r-err2','⚠️ Email PayPal invalide.');return}
+      if(!ep||!isValidEmail(ep)){showErr('r-err2','⚠️ Email PayPal invalide.');return}
       infoPaiement=ep;
     }
     hideErr('r-err2');
+    // Rate limiting : 1 soumission par minute max
+    const lastSub=parseInt(localStorage.getItem('shopilot_last_sub')||'0');
+    if(Date.now()-lastSub<60000){
+      showErr('r-err2','⚠️ Veuillez patienter 1 minute avant de soumettre à nouveau.');
+      return;
+    }
     const btn=document.getElementById('btn-sub');
     btn.textContent='⏳ Envoi en cours...';btn.disabled=true;
     // Construire le message WhatsApp AVANT l'appel Firebase (sinon bloqué sur mobile)
     const modePaiementLabel=selectedCat==='momo'?`Mobile Money - ${selectedProvider}`:selectedCat==='carte'?'Carte bancaire':'PayPal';
-    const msg=`🔔 *Nouvelle inscription Shopilot !*%0A%0A🏪 Commerce : ${nom}%0A📂 Type : ${type}%0A📧 Email : ${email}%0A📱 WhatsApp : ${phone}%0A💼 Plan : ${plan}%0A💳 Paiement : ${modePaiementLabel}%0A📋 Infos : ${infoPaiement}%0A📅 Date : ${new Date().toLocaleDateString('fr-FR')}`;
+    const msg=`🔔 *Nouvelle inscription Shopilot !*%0A%0A🏪 Commerce : ${encodeURIComponent(sanitize(nom))}%0A📂 Type : ${encodeURIComponent(sanitize(type))}%0A📧 Email : ${encodeURIComponent(sanitize(email))}%0A📱 WhatsApp : ${encodeURIComponent(sanitize(phone))}%0A💼 Plan : ${encodeURIComponent(sanitize(plan))}%0A💳 Paiement : ${encodeURIComponent(sanitize(modePaiementLabel))}%0A📋 Infos : ${encodeURIComponent(sanitize(infoPaiement))}%0A📅 Date : ${new Date().toLocaleDateString('fr-FR')}`;
     const waUrl=`https://wa.me/2250712962296?text=${msg}`;
     try{
       const nouvelleRef=push(ref(db,'demandes'));
       await set(nouvelleRef,{
-        nom,type,email,phone,plan,
-        paiement:modePaiementLabel,infosPaiement:infoPaiement,
+        nom:sanitize(nom),
+        type:sanitize(type),
+        email:sanitize(email),
+        phone:sanitize(phone),
+        plan:sanitize(plan),
+        paiement:sanitize(modePaiementLabel),
+        infosPaiement:sanitize(infoPaiement),
         statut:'en_attente',
-        date:new Date().toISOString().slice(0,10),ts:Date.now()
+        date:new Date().toISOString().slice(0,10),
+        ts:Date.now()
       });
+      localStorage.setItem('shopilot_last_sub', Date.now());
       document.getElementById('reg-step2').style.display='none';
       document.getElementById('reg-success').style.display='block';
       // Ouvrir WhatsApp — fonctionne sur mobile et desktop
