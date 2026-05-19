@@ -317,7 +317,11 @@ body{font-family:'DM Sans',sans-serif;background:var(--off);color:var(--text);mi
   <div class="login-box">
     <div class="login-logo">Shopilot</div>
     <div class="login-sub">Dashboard Administrateur</div>
-    <label class="login-label">Mot de passe admin</label>
+    <div style="background:var(--off);border:1.5px solid var(--border);border-radius:12px;padding:11px 16px;font-size:14px;color:var(--text2);margin-bottom:16px;display:flex;align-items:center;gap:8px">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+      acelesteaneypro@gmail.com
+    </div>
+    <label class="login-label">Mot de passe</label>
     <input class="login-input" id="admin-pwd" type="password" placeholder="••••••••" onkeydown="if(event.key==='Enter')loginAdmin()">
     <button class="login-btn" onclick="loginAdmin()">Accéder au dashboard</button>
     <div class="login-err" id="login-err"></div>
@@ -572,6 +576,7 @@ body{font-family:'DM Sans',sans-serif;background:var(--off);color:var(--text);mi
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-app.js";
 import { getDatabase, ref, get, set, push, update, remove } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-database.js";
+import { getAuth, signInWithEmailAndPassword, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-auth.js";
 
 const firebaseConfig = {
   apiKey: "AIzaSyDBjIwGVJOWVldt_2xGmzRYob8usvqYPlQ",
@@ -607,7 +612,8 @@ function isValidFirebaseUrl(url){
 
 
 const db = getDatabase(app);
-const ADMIN_PWD_HASH = 'ee31d400aa564e5d082657157e248daafc529b9e2472f884cc9ba4a947813a00';
+const auth = getAuth(app);
+const ADMIN_EMAIL = 'acelesteaneypro@gmail.com';
 let clientsData = [];
 let demandesData = [];
 let currentFilter = 'all';
@@ -661,32 +667,64 @@ document.addEventListener('keydown',resetActivity);
 document.addEventListener('click',resetActivity);
 setInterval(()=>{
   if(document.getElementById('main-layout').style.display!=='none'&&Date.now()-lastActivity>SESSION_TIMEOUT){
-    logout();
-    document.getElementById('login-err').textContent='⏱ Session expirée après 30 min d\'inactivité.';
+    signOut(auth).then(()=>{
+      document.getElementById('login-overlay').style.display='flex';
+      document.getElementById('main-layout').style.display='none';
+      document.getElementById('admin-pwd').value='';
+      document.getElementById('login-err').textContent='⏱ Session expirée après 30 min d\'inactivité.';
+    });
   }
 },60000);
 
-// ── LOGIN ────────────────────────────────────────────────
+// ── LOGIN Firebase Auth ──────────────────────────────────
 let loginAttempts=0,blockUntil=0;
-window.loginAdmin=async function(){
-  if(Date.now()<blockUntil){const mins=Math.ceil((blockUntil-Date.now())/60000);document.getElementById('login-err').textContent=`⛔ Bloqué. Réessayez dans ${mins} min.`;return}
-  const inputPwd = document.getElementById('admin-pwd').value;
-  const enc = new TextEncoder();
-  const hashBuf = await crypto.subtle.digest('SHA-256', enc.encode(inputPwd));
-  const hashHex = Array.from(new Uint8Array(hashBuf)).map(b=>b.toString(16).padStart(2,'0')).join('');
-  if(hashHex === ADMIN_PWD_HASH){
-    loginAttempts=0;
+
+// Surveiller l'état d'authentification — persistance automatique de session
+onAuthStateChanged(auth, user=>{
+  if(user && user.email===ADMIN_EMAIL){
+    // Utilisateur déjà connecté (token Firebase encore valide)
     document.getElementById('login-overlay').style.display='none';
     document.getElementById('main-layout').style.display='flex';
     initFirebase();
     resetActivity();
-  }else{
+  } else {
+    // Non connecté ou token expiré
+    document.getElementById('login-overlay').style.display='flex';
+    document.getElementById('main-layout').style.display='none';
+  }
+});
+
+window.loginAdmin=async function(){
+  if(Date.now()<blockUntil){
+    const mins=Math.ceil((blockUntil-Date.now())/60000);
+    document.getElementById('login-err').textContent=`⛔ Bloqué. Réessayez dans ${mins} min.`;
+    return;
+  }
+  const pwd=document.getElementById('admin-pwd').value;
+  if(!pwd){document.getElementById('login-err').textContent='⚠️ Entrez votre mot de passe.';return}
+
+  const btn=document.querySelector('.login-btn');
+  btn.textContent='Connexion…';btn.disabled=true;
+
+  try{
+    const cred=await signInWithEmailAndPassword(auth, ADMIN_EMAIL, pwd);
+    // onAuthStateChanged prend le relais automatiquement
+    loginAttempts=0;
+  }catch(e){
     loginAttempts++;
-    document.getElementById('login-err').textContent=`⚠️ Mot de passe incorrect (${loginAttempts}/5)`;
+    let msg='⚠️ Mot de passe incorrect.';
+    if(e.code==='auth/too-many-requests') msg='⛔ Trop de tentatives. Réessayez plus tard.';
+    if(e.code==='auth/user-disabled')     msg='⛔ Compte désactivé.';
+    if(e.code==='auth/network-request-failed') msg='⚠️ Erreur réseau. Vérifiez votre connexion.';
+    document.getElementById('login-err').textContent=`${msg} (${loginAttempts}/5)`;
     if(loginAttempts>=5){blockUntil=Date.now()+30*60*1000;document.getElementById('login-err').textContent='⛔ Bloqué 30 minutes.'}
+  }finally{
+    btn.textContent='Accéder au dashboard';btn.disabled=false;
   }
 };
-window.logout=function(){
+
+window.logout=async function(){
+  try{ await signOut(auth); }catch(e){}
   document.getElementById('login-overlay').style.display='flex';
   document.getElementById('main-layout').style.display='none';
   document.getElementById('admin-pwd').value='';
@@ -711,7 +749,15 @@ async function chargerClients(){
     if(pd&&pd.style.display!=='none')renderDashboard();
     if(pc&&pc.style.display!=='none')renderClients();
     setFbStatus(true);
-  }catch(e){console.error(e);setFbStatus(false)}
+  }catch(e){
+    console.error(e);
+    // Distinguer erreur de permission (règles Firebase) vs hors ligne
+    if(e.message&&(e.message.includes('permission')||e.message.includes('PERMISSION_DENIED'))){
+      setFbStatus(true,'restricted'); // connecté mais règles restrictives
+    }else{
+      setFbStatus(false);
+    }
+  }
 }
 
 async function chargerDemandes(){
@@ -725,9 +771,14 @@ async function chargerDemandes(){
   }catch(e){console.error(e)}
 }
 
-function setFbStatus(ok){
+function setFbStatus(ok, mode){
   const dot=document.getElementById('fb-dot');
   const label=document.querySelector('#fb-status span');
+  if(mode==='restricted'){
+    if(dot)dot.className='fb-dot';
+    if(label)label.textContent='Firebase connecté';
+    return;
+  }
   if(dot)dot.className='fb-dot'+(ok?'':' offline');
   if(label)label.textContent=ok?'Firebase connecté':'Hors ligne';
 }
